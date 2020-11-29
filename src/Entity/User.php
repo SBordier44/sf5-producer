@@ -59,6 +59,11 @@ abstract class User implements UserInterface
     protected string $password = '';
 
     /**
+     * @ORM\Embedded(class="ForgottenPassword")
+     */
+    protected ?ForgottenPassword $forgottenPassword;
+
+    /**
      * @ORM\Column(type="datetime_immutable")
      */
     protected DateTimeImmutable $registeredAt;
@@ -206,5 +211,33 @@ abstract class User implements UserInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    public function hasForgotHisPassword(): void
+    {
+        $this->forgottenPassword = new ForgottenPassword();
+    }
+
+    public function getFullName(): string
+    {
+        return sprintf('%s %s', $this->firstName, $this->lastName);
+    }
+
+    /**
+     * @return ForgottenPassword|null
+     */
+    public function getForgottenPassword(): ?ForgottenPassword
+    {
+        return $this->forgottenPassword;
+    }
+
+    /**
+     * @param ForgottenPassword|null $forgottenPassword
+     * @return User
+     */
+    public function setForgottenPassword(?ForgottenPassword $forgottenPassword): User
+    {
+        $this->forgottenPassword = $forgottenPassword;
+        return $this;
     }
 }
