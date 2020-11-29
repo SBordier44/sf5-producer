@@ -24,7 +24,7 @@ class RegistrationTest extends WebTestCase
         $crawler = $client->request(
             Request::METHOD_GET,
             $router->generate(
-                'registration',
+                'security_registration',
                 [
                     'role' => $role
                 ]
@@ -33,7 +33,7 @@ class RegistrationTest extends WebTestCase
 
         $form = $crawler->filter('form[name=registration]')->form(
             [
-                'registration[email]' => $role . '@email.com',
+                'registration[email]' => 'email@email.com',
                 'registration[plainPassword]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
