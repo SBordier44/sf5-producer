@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes produits{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h1 class="mb-0">Mes produits</h1>
+                    <a href="{{ path('product_create') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus"></i> Créer un nouveau produit
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th class="text-center">Nom du produit</th>
+                            <th class="text-center">Prix unitaire</th>
+                            <th class="text-center">TVA</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td class="text-center">{{ product.name }}</td>
+                                <td class="text-center">{{ (product.price.unitPrice / 100)|format_currency('EUR') }}</td>
+                                <td class="text-center">{{ (product.price.vat) }}%</td>
+                                <td>
+                                    <a href="{{ path('product_update', {id: product.id}) }}" class="btn btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.4/phpunit.xsd" backupGlobals="false" colors="true"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd" colors="true"
          bootstrap="tests/bootstrap.php">
     <coverage processUncoveredFiles="true">
         <include>
@@ -17,7 +17,7 @@
         <server name="APP_ENV" value="test" force="true"/>
         <server name="SHELL_VERBOSITY" value="-1"/>
         <server name="SYMFONY_PHPUNIT_REMOVE" value=""/>
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9.4"/>
+        <server name="SYMFONY_PHPUNIT_VERSION" value="9.5"/>
         <server name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
     </php>
     <testsuites>
