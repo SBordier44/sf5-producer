@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Form\StockType;
 use App\Repository\ProductRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -78,6 +79,31 @@ class ProductController extends AbstractController
 
         return $this->render(
             'ui/product/update.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
+    }
+
+    /**
+     * @param Product $product
+     * @param Request $request
+     * @return Response
+     * @Route("/{id}/stock", name="product_stock")
+     * @IsGranted("update", subject="product")
+     */
+    public function stock(Product $product, Request $request): Response
+    {
+        $form = $this->createForm(StockType::class, $product)->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Le stock de votre produit à été modifié avec succès');
+            return $this->redirectToRoute('product_index');
+        }
+
+        return $this->render(
+            'ui/product/stock.html.twig',
             [
                 'form' => $form->createView()
             ]
