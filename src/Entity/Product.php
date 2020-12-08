@@ -39,7 +39,7 @@ class Product
      * @Assert\NotBlank
      * @Assert\GreaterThanOrEqual(0)
      */
-    private int $qantity = 0;
+    private int $quantity = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Farm")
@@ -110,18 +110,18 @@ class Product
     /**
      * @return int
      */
-    public function getQantity(): int
+    public function getQuantity(): int
     {
-        return $this->qantity;
+        return $this->quantity;
     }
 
     /**
-     * @param int $qantity
+     * @param int $quantity
      * @return Product
      */
-    public function setQantity(int $qantity): Product
+    public function setQuantity(int $quantity): Product
     {
-        $this->qantity = $qantity;
+        $this->quantity = $quantity;
         return $this;
     }
 

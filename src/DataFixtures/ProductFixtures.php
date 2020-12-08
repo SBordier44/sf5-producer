@@ -27,7 +27,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                     ->setName("Produit $i")
                     ->setDescription("Description du produit $i")
                     ->setPrice($price)
-                    ->setQantity(random_int(5, 100));
+                    ->setQuantity(random_int(5, 100));
                 $manager->persist($product);
             }
         }

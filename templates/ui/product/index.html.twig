@@ -28,10 +28,25 @@
                                 <td class="text-center">{{ product.name }}</td>
                                 <td class="text-center">{{ (product.price.unitPrice / 100)|format_currency('EUR') }}</td>
                                 <td class="text-center">{{ (product.price.vat) }}%</td>
+                                <td class="text-center">{{ (product.quantity) }}%</td>
                                 <td>
-                                    <a href="{{ path('product_update', {id: product.id}) }}" class="btn btn-primary">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
+                                            <i class="fas fa-cogs"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a href="{{ path('product_stock', {id: product.id}) }}"
+                                               class="dropdown-item">
+                                                Stock
+                                            </a>
+                                            <a href="{{ path('product_update', {id: product.id}) }}"
+                                               class="dropdown-item">
+                                                Modifier
+                                            </a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
