@@ -40,6 +40,30 @@ class Farm
     private Producer $producer;
 
     /**
+     * @ORM\Embedded(class="App\Entity\Address")
+     * @Assert\Valid
+     */
+    private ?Address $address = null;
+
+    /**
+     * @return Address|null
+     */
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address|null $address
+     * @return Farm
+     */
+    public function setAddress(?Address $address): Farm
+    {
+        $this->address = $address;
+        return $this;
+    }
+
+    /**
      * @return Uuid
      */
     public function getId(): Uuid
