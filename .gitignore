@@ -27,3 +27,5 @@ yarn-error.log
 /phpcs.xml
 ###< squizlabs/php_codesniffer ###
 .php-version
+process.env
+.php_cs.cache
