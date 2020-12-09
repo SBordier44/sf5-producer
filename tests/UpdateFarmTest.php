@@ -26,7 +26,18 @@ class UpdateFarmTest extends WebTestCase
         $form = $crawler->filter('form[name=farm]')->form(
             [
                 'farm[name]' => 'NextGenExploit',
-                'farm[description]' => 'Super Exploitation de nouvelle génération'
+                'farm[description]' => 'Super Exploitation de nouvelle génération',
+                'farm[address][address1]' => '25 Rue de la pelouse verte',
+                'farm[address][address2]' => 'Appt 320',
+                'farm[address][address3]' => '1er etage, Porte gauche',
+                'farm[address][zipCode]' => '75000',
+                'farm[address][city]' => 'Paris',
+                'farm[address][region]' => 'Ile de France, Haut de france',
+                'farm[address][country]' => 'France',
+                'farm[address][phone]' => '0607080910',
+                'farm[address][phone2]' => '0203040506',
+                'farm[address][position][latitude]' => '48.441049',
+                'farm[address][position][longitude]' => '1.546233',
             ]
         );
 
