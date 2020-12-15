@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -17,16 +18,19 @@ class Address
     /**
      * @ORM\Column(nullable=true)
      * @Assert\NotBlank
+     * @Groups({"read"})
      */
     private ?string $address1 = null;
 
     /**
      * @ORM\Column(nullable=true)
+     * @Groups({"read"})
      */
     private ?string $address2 = null;
 
     /**
      * @ORM\Column(nullable=true)
+     * @Groups({"read"})
      */
     private ?string $address3 = null;
 
@@ -34,30 +38,35 @@ class Address
      * @ORM\Column(length=5, nullable=true)
      * @Assert\NotBlank
      * @Assert\Regex(pattern="/^[A-Za-z0-9]{5}$/")
+     * @Groups({"read"})
      */
     private ?string $zipCode = null;
 
     /**
      * @ORM\Column(nullable=true)
      * @Assert\NotBlank
+     * @Groups({"read"})
      */
     private ?string $city = null;
 
     /**
      * @ORM\Column(nullable=true)
      * @Assert\NotBlank
+     * @Groups({"read"})
      */
     private ?string $region = null;
 
     /**
      * @ORM\Column(nullable=true)
      * @Assert\NotBlank
+     * @Groups({"read"})
      */
     private ?string $country = null;
 
     /**
      * @ORM\Embedded(class="Position")
      * @Assert\Valid
+     * @Groups({"read"})
      */
     private ?Position $position = null;
 
@@ -65,11 +74,13 @@ class Address
      * @ORM\Column(length=10, nullable=true)
      * @Assert\NotBlank
      * @Assert\Regex(pattern="/^[0-9]{10}$/")
+     * @Groups({"read"})
      */
     private ?string $phone = null;
 
     /**
      * @ORM\Column(nullable=true)
+     * @Groups({"read"})
      */
     private ?string $phone2 = null;
 

@@ -7,6 +7,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class Farm
@@ -18,12 +19,14 @@ class Farm
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid")
+     * @Groups({"read"})
      */
     private Uuid $id;
 
     /**
      * @ORM\Column(nullable=true)
      * @Assert\NotBlank
+     * @Groups({"read"})
      */
     private ?string $name = null;
 
@@ -42,6 +45,7 @@ class Farm
     /**
      * @ORM\Embedded(class="App\Entity\Address")
      * @Assert\Valid
+     * @Groups({"read"})
      */
     private ?Address $address = null;
 
