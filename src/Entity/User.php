@@ -7,6 +7,7 @@ namespace App\Entity;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\DiscriminatorMap({"producer"="App\Entity\Producer", "customer"="App\Entity\Customer"})
  * @UniqueEntity("email")
  */
-abstract class User implements UserInterface
+abstract class User implements UserInterface, \Serializable, EquatableInterface
 {
     /**
      * @ORM\Id()
@@ -48,8 +49,8 @@ abstract class User implements UserInterface
     protected string $email = '';
 
     /**
-     * @Assert\NotBlank()
-     * @Assert\Length(min=8)
+     * @Assert\NotBlank(groups={"password"})
+     * @Assert\Length(min=8, groups={"password"})
      */
     protected ?string $plainPassword = null;
 
@@ -240,5 +241,28 @@ abstract class User implements UserInterface
     {
         $this->forgottenPassword = $forgottenPassword;
         return $this;
+    }
+
+    public function serialize(): string
+    {
+        return serialize(
+            [
+                $this->id,
+                $this->email
+            ]
+        );
+    }
+
+    public function unserialize($serialized): array
+    {
+        return [
+            $this->id,
+            $this->email
+        ] = unserialize($serialized, ['allowed_classes' => true]);
+    }
+
+    public function isEqualTo(UserInterface $user): bool
+    {
+        return $user->getUsername() === $this->getUsername();
     }
 }

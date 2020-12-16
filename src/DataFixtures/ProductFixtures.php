@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Address;
 use App\Entity\Farm;
+use App\Entity\Position;
 use App\Entity\Price;
 use App\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -17,6 +19,18 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
     {
         $farms = $manager->getRepository(Farm::class)->findAll();
         foreach ($farms as $farm) {
+            $position = (new Position())
+                ->setLongitude(-1.44995)
+                ->setLatitude(47.16075);
+            $address = (new Address())
+                ->setAddress1('28 Route de Saint-Fiacre')
+                ->setCity('Vertou')
+                ->setZipCode('44120')
+                ->setCountry('France')
+                ->setPhone('0613937893')
+                ->setRegion('Loire-Atlantique, Pays de la Loire')
+                ->setPosition($position);
+            $farm->setAddress($address);
             for ($i = 1; $i <= 10; $i++) {
                 $price = (new Price())
                     ->setUnitPrice(random_int(100, 1000))
