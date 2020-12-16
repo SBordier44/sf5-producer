@@ -14,7 +14,7 @@ class FarmTest extends WebTestCase
 
     public function testSuccessfullFarmAll(): void
     {
-        $client = static::createAuthenticatedClient('producer@email.com');
+        $client = static::createAuthenticatedClient('customer@email.com');
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
@@ -26,7 +26,7 @@ class FarmTest extends WebTestCase
 
     public function testSuccessfullFarmShow(): void
     {
-        $client = static::createAuthenticatedClient('producer@email.com');
+        $client = static::createAuthenticatedClient('customer@email.com');
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');

@@ -83,6 +83,10 @@
     "symfony/polyfill-php56": "*"
   },
   "scripts": {
+    "analyze": [
+      "vendor/bin/phpcbf",
+      "vendor/bin/phpcs"
+    ],
     "prepare-test": [
       "php bin/console d:d:d --if-exists --force --env=test",
       "php bin/console d:d:c --env=test",

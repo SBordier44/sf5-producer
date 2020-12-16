@@ -1,0 +1,129 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
+
+/**
+ * Class CartItem
+ * @package App\Entity
+ * @ORM\Entity
+ */
+class CartItem
+{
+    /**
+     * @var Uuid
+     * @ORM\Id
+     * @ORM\Column(type="uuid")
+     */
+    private Uuid $id;
+
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private int $quantity = 0;
+
+    /**
+     * @var Product
+     * @ORM\ManyToOne(targetEntity="App\Entity\Product")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private Product $product;
+
+    /**
+     * @var Customer|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\Customer", inversedBy="cart")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private ?Customer $customer = null;
+
+    /**
+     * @return Uuid
+     */
+    public function getId(): Uuid
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getCustomer(): Customer
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @param Customer $customer
+     * @return CartItem
+     */
+    public function setCustomer(Customer $customer): CartItem
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    /**
+     * @param Uuid $id
+     * @return CartItem
+     */
+    public function setId(Uuid $id): CartItem
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity(): int
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param int $quantity
+     * @return CartItem
+     */
+    public function setQuantity(int $quantity): CartItem
+    {
+        $this->quantity = $quantity;
+        if ($this->quantity <= 0) {
+            $this->customer->getCart()->removeElement($this);
+            $this->customer = null;
+        }
+        return $this;
+    }
+
+    /**
+     * @return Product
+     */
+    public function getProduct(): Product
+    {
+        return $this->product;
+    }
+
+    /**
+     * @param Product $product
+     * @return CartItem
+     */
+    public function setProduct(Product $product): CartItem
+    {
+        $this->product = $product;
+        return $this;
+    }
+
+    public function increaseQuantity(): void
+    {
+        $this->quantity++;
+    }
+
+    public function getPriceIncludingTaxes(): float
+    {
+        return $this->product->getPriceIncludingTaxes() * $this->quantity;
+    }
+}

@@ -161,7 +161,7 @@ class Product
         return $this;
     }
 
-    public function priceIncludingTaxes(): float
+    public function getPriceIncludingTaxes(): float
     {
         return ($this->price->getUnitPrice() * $this->price->getVat()) / 100;
     }

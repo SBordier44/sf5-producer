@@ -37,6 +37,11 @@
                                    href="{{ path("product_index") }}">
                                     Mes Produits
                                 </a>
+                            {% else %}
+                                <a class="dropdown-item"
+                                   href="{{ path("cart_index") }}">
+                                    Mon Panier
+                                </a>
                             {% endif %}
                             <a class="dropdown-item" href="{{ path('security_logout') }}">Se Déconnecter</a>
                         </div>
