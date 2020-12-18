@@ -56,4 +56,94 @@ class OrderTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
+
+    public function testAccessDeniedOrderCreateForProducer(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testRedirectToLoginIfUserIsNotLoggedForOrderCreate(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testSuccessfullOrderHistory(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_history'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testRedirectToLoginIfUserIsNotLoggedForOrderHistory(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_history'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testAccessDeniedIfUserIsNotACustomerForOrderHistory(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_history'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
 }

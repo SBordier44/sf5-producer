@@ -13,7 +13,7 @@ class FarmTest extends WebTestCase
 {
     use AuthenticationTrait;
 
-    public function testSuccessfullFarmAll(): void
+    public function testSuccessfullFarmAllIfConnectedUser(): void
     {
         $client = static::createAuthenticatedClient('customer@email.com');
 
@@ -25,7 +25,19 @@ class FarmTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testSuccessfullFarmShow(): void
+    public function testSuccessfullFarmAllIfNotConnectedUser(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('farm_all'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testSuccessfullFarmShowIfConnectedUser(): void
     {
         $client = static::createAuthenticatedClient('customer@email.com');
 
@@ -48,36 +60,30 @@ class FarmTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testSuccessfullFarmUpdate(): void
+    public function testSuccessfullFarmShowIfNotConnectedUser(): void
     {
-        $client = static::createAuthenticatedClient('producer@email.com');
+        $client = static::createClient();
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate('farm_update'));
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $farm = $entityManager->getRepository(Farm::class)->findOneBy([]);
 
-        $form = $crawler->filter('form[name=farm]')->form(
-            [
-                'farm[name]' => 'Exploitation',
-                'farm[description]' => 'Description',
-                'farm[address][address1]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ]
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'farm_show',
+                [
+                    'id' => $farm->getId()
+                ]
+            )
         );
 
-        $client->submit($form);
-
-        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testSuccessfullUpdatedFarmInfo(): void
+    public function testSuccessfullUpdatedFarmInfoForProducer(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');
 
@@ -110,6 +116,40 @@ class FarmTest extends WebTestCase
         $client->submit($form);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+    }
+
+    public function testFailedGetFarmInfoIfUserIsNotLogged(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate('farm_update')
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testFailedGetFarmInfoIfUserIsACustomer(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate('farm_update')
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function provideBadRequests(): Generator

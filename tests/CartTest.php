@@ -52,4 +52,59 @@ class CartTest extends WebTestCase
 
         self::assertEquals(0, $crawler->filter('tbody > tr')->count());
     }
+
+    public function testFailedAddToCartIfUserIsNotLogged(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testSuccessfullShowCart(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testRedirectToLoginIfUserIsNotLoggedForShowCart(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
 }

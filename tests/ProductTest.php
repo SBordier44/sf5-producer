@@ -260,4 +260,184 @@ class ProductTest extends WebTestCase
             'Cette valeur doit être supérieure ou égale à 0.'
         ];
     }
+
+    public function testAccessDeniedProductCreate(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate('product_create')
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProductUpdate(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        /** @var EntityManagerInterface $manager */
+        $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $manager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_update',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProductDelete(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        /** @var EntityManagerInterface $manager */
+        $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $manager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_delete',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProducts(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_index'
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testRedirectToLoginIfNotLoggedUserInProductCreateAction(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate('product_create')
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testRedirectToLoginIfNotLoggedUserInProductUpdateAction(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        /** @var EntityManagerInterface $manager */
+        $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $manager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_update',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testRedirectToLoginIfNotLoggedUserInProductDeleteAction(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        /** @var EntityManagerInterface $manager */
+        $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $manager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_delete',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testRedirectToLoginIfNotLoggedUserInProductsAction(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'product_index'
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
 }
