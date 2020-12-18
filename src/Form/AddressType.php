@@ -16,15 +16,21 @@ class AddressType extends AbstractType
     {
         $builder
             ->add(
-                'address1',
+                'address',
                 TextType::class,
                 [
                     'label' => 'Adresse',
                     'empty_data' => ''
                 ]
             )
-            ->add('address2', TextType::class, ['required' => false, 'label' => 'Adresse (suite)'])
-            ->add('address3', TextType::class, ['required' => false, 'label' => 'Adresse (suite)'])
+            ->add(
+                'addressExtra',
+                TextType::class,
+                [
+                    'required' => false,
+                    'label' => 'Complément d\'adresse'
+                ]
+            )
             ->add(
                 'zipCode',
                 TextType::class,
@@ -57,7 +63,13 @@ class AddressType extends AbstractType
                     'empty_data' => ''
                 ]
             )
-            ->add('position', PositionType::class, ['label' => false])
+            ->add(
+                'position',
+                PositionType::class,
+                [
+                    'label' => false
+                ]
+            )
             ->add(
                 'phone',
                 TextType::class,
@@ -65,8 +77,7 @@ class AddressType extends AbstractType
                     'label' => 'Téléphone',
                     'empty_data' => ''
                 ]
-            )
-            ->add('phone2', TextType::class, ['required' => false, 'label' => 'Téléphone (autre)']);
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)

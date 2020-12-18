@@ -3,30 +3,47 @@
 {% block title %}Mon Exploitation{% endblock %}
 
 {% block body %}
-    <div class="row justify-content-center">
-        <div class="col-12">
-            {{ form_start(form) }}
+    {{ form_start(form) }}
+    <div class="row justify-content-center align-items-stretch">
+        <div class="col-6">
             <div class="card">
                 <div class="card-header">
-                    <h1 class="mb-0">Mon Exploitation</h1>
+                    <h1 class="mb-0">Mon exploitation</h1>
                 </div>
                 <div class="card-body">
                     {{ form_row(form.name) }}
                     {{ form_row(form.description) }}
-                </div>
-                <div class="card-body p-0">
-                    <div id="map" class="w-100"></div>
-                </div>
-                <div class="card-body">
-                    {{ form_rest(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.address.address) }}
+                        {{ form_widget(form.address.address) }}
+                        <ul class="auto-complete"></ul>
+                        {{ form_errors(form.address.address) }}
+                    </div>
+                    {{ form_row(form.address.addressExtra) }}
+                    {{ form_row(form.address.zipCode) }}
+                    {{ form_row(form.address.city) }}
+                    {{ form_row(form.address.region) }}
+                    {{ form_row(form.address.country) }}
+                    {{ form_row(form.address.phone) }}
+                    <button type="button" class="btn btn-outline-danger btn-remove-file mt-4" data-target="#farm_image_path">
+                        Supprimer l'image
+                    </button>
+                    {{ form_row(form.image) }}
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-block btn-primary" type="submit">Enregistrer</button>
+                    <button class="btn btn-block btn-primary">Modifier</button>
                 </div>
             </div>
-            {{ form_end(form) }}
+        </div>
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body p-0 flex-grow-1">
+                    <div id="map" class="w-100 h-100"></div>
+                </div>
+            </div>
         </div>
     </div>
+    {{ form_end(form) }}
 {% endblock %}
 {% block javascripts %}
     <script defer

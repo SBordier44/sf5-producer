@@ -20,19 +20,13 @@ class Address
      * @Assert\NotBlank
      * @Groups({"read"})
      */
-    private ?string $address1 = null;
+    private ?string $address = null;
 
     /**
      * @ORM\Column(nullable=true)
      * @Groups({"read"})
      */
-    private ?string $address2 = null;
-
-    /**
-     * @ORM\Column(nullable=true)
-     * @Groups({"read"})
-     */
-    private ?string $address3 = null;
+    private ?string $addressExtra = null;
 
     /**
      * @ORM\Column(length=5, nullable=true)
@@ -79,62 +73,38 @@ class Address
     private ?string $phone = null;
 
     /**
-     * @ORM\Column(nullable=true)
-     * @Groups({"read"})
-     */
-    private ?string $phone2 = null;
-
-    /**
      * @return string|null
      */
-    public function getAddress1(): ?string
+    public function getAddress(): ?string
     {
-        return $this->address1;
+        return $this->address;
     }
 
     /**
-     * @param string|null $address1
+     * @param string|null $address
      * @return Address
      */
-    public function setAddress1(?string $address1): Address
+    public function setAddress(?string $address): Address
     {
-        $this->address1 = $address1;
+        $this->address = $address;
         return $this;
     }
 
     /**
      * @return string|null
      */
-    public function getAddress2(): ?string
+    public function getAddressExtra(): ?string
     {
-        return $this->address2;
+        return $this->addressExtra;
     }
 
     /**
-     * @param string|null $address2
+     * @param string|null $addressExtra
      * @return Address
      */
-    public function setAddress2(?string $address2): Address
+    public function setAddressExtra(?string $addressExtra): Address
     {
-        $this->address2 = $address2;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAddress3(): ?string
-    {
-        return $this->address3;
-    }
-
-    /**
-     * @param string|null $address3
-     * @return Address
-     */
-    public function setAddress3(?string $address3): Address
-    {
-        $this->address3 = $address3;
+        $this->addressExtra = $addressExtra;
         return $this;
     }
 
@@ -243,24 +213,6 @@ class Address
     public function setPhone(?string $phone): Address
     {
         $this->phone = $phone;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhone2(): ?string
-    {
-        return $this->phone2;
-    }
-
-    /**
-     * @param string|null $phone2
-     * @return Address
-     */
-    public function setPhone2(?string $phone2): Address
-    {
-        $this->phone2 = $phone2;
         return $this;
     }
 }
