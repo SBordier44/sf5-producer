@@ -1,7 +1,3 @@
-283cef27-acee-4f52-9b36-4be730c2cc15.png
-*.png
-*.jpg
-*.jpeg
-*.gif
+*
 !.gitignore
 !TF300.png
