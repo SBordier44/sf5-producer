@@ -16,6 +16,13 @@ class ProductType extends AbstractType
     {
         $builder
             ->add(
+                'image',
+                ImageType::class,
+                [
+                    'label' => false
+                ]
+            )
+            ->add(
                 'name',
                 TextType::class,
                 [

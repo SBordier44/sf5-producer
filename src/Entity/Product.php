@@ -54,6 +54,12 @@ class Product
     private Price $price;
 
     /**
+     * @ORM\Embedded(class="Image")
+     * @Assert\Valid
+     */
+    private Image $image;
+
+    /**
      * @return Uuid
      */
     public function getId(): Uuid
@@ -164,5 +170,23 @@ class Product
     public function getPriceIncludingTaxes(): float
     {
         return ($this->price->getUnitPrice() * $this->price->getVat()) / 100;
+    }
+
+    /**
+     * @return Image
+     */
+    public function getImage(): Image
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param Image $image
+     * @return Product
+     */
+    public function setImage(Image $image): Product
+    {
+        $this->image = $image;
+        return $this;
     }
 }

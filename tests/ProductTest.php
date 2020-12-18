@@ -6,9 +6,11 @@ use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Uid\Uuid;
 
 class ProductTest extends WebTestCase
 {
@@ -51,7 +53,8 @@ class ProductTest extends WebTestCase
                 'product[name]' => 'Produit laitier',
                 'product[description]' => 'Super Produit de ma ferme biologique',
                 'product[price][unitPrice]' => 100,
-                'product[price][vat]' => 2.1
+                'product[price][vat]' => 2.1,
+                'product[image][file]' => $this->createImage()
             ]
         );
 
@@ -108,7 +111,8 @@ class ProductTest extends WebTestCase
                 'product[name]' => 'Produit laitier',
                 'product[description]' => 'Super Produit de ma ferme biologique',
                 'product[price][unitPrice]' => 100,
-                'product[price][vat]' => 2.1
+                'product[price][vat]' => 2.1,
+                'product[image][file]' => $this->createImage()
             ]
         );
 
@@ -439,5 +443,13 @@ class ProductTest extends WebTestCase
         $client->followRedirect();
 
         self::assertRouteSame('security_login');
+    }
+
+    private function createImage(): UploadedFile
+    {
+        $filename = Uuid::v4() . '.png';
+        $path = __DIR__ . '/../public/uploads/';
+        copy($path . 'TF300.png', $path . $filename);
+        return new UploadedFile($path . $filename, $filename, 'image/png', null, true);
     }
 }
