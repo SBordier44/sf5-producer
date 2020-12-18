@@ -16,9 +16,23 @@ class FarmType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class)
+            ->add(
+                'name',
+                TextType::class,
+                [
+                    'label' => 'Nom de l\'exploitation',
+                    'empty_data' => ''
+                ]
+            )
             ->add('address', AddressType::class, ['label' => false])
-            ->add('description', TextareaType::class);
+            ->add(
+                'description',
+                TextareaType::class,
+                [
+                    'label' => 'Nom de l\'exploitation',
+                    'empty_data' => ''
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)

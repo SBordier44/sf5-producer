@@ -84,7 +84,7 @@ class WebAuthenticator extends AbstractFormLoginAuthenticator implements Passwor
         );
 
         if (!$user) {
-            throw new CustomUserMessageAuthenticationException('Cette adresse email n\'existe pas.');
+            throw new CustomUserMessageAuthenticationException('Identifiants invalides.');
         }
 
         return $user;

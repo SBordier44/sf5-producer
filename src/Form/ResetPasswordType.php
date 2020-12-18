@@ -14,7 +14,14 @@ class ResetPasswordType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('plainPassword', PasswordType::class);
+        $builder->add(
+            'plainPassword',
+            PasswordType::class,
+            [
+                'label' => 'Nouveau mot de passe',
+                'empty_data' => ''
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)

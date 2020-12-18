@@ -16,7 +16,7 @@ class PriceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('unitPrice', MoneyType::class, ['scale' => 0])
+            ->add('unitPrice', MoneyType::class, ['scale' => 0, 'label' => 'Prix unitaire HT', 'empty_data' => 0])
             ->add(
                 'vat',
                 ChoiceType::class,
@@ -27,7 +27,8 @@ class PriceType extends AbstractType
                         '5.5%' => 5.5,
                         '10%' => 10.0,
                         '20%' => 20.0
-                    ]
+                    ],
+                    'label' => 'TVA'
                 ]
             );
     }
