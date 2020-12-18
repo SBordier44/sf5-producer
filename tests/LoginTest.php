@@ -97,6 +97,6 @@ class LoginTest extends WebTestCase
 
         $client->followRedirect();
 
-        self::assertSelectorTextContains('div.alert-danger', "Cette adresse email n'existe pas.");
+        self::assertSelectorTextContains('div.alert-danger', "Identifiants invalides.");
     }
 }

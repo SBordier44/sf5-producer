@@ -39,6 +39,8 @@ class OrderTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
+        $client->followRedirect();
+
         /** @var Order $order */
         $order = $entityManager->getRepository(Order::class)->findOneBy(['state' => 'created']);
 

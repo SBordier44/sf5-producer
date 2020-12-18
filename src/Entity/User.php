@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"producer"="App\Entity\Producer", "customer"="App\Entity\Customer"})
- * @UniqueEntity("email")
+ * @UniqueEntity(fields="email", message="Cette adresse email est déjà utilisée.", entityClass="App\Entity\User")
  */
 abstract class User implements UserInterface, \Serializable, EquatableInterface
 {

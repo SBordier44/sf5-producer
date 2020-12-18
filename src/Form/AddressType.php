@@ -15,16 +15,58 @@ class AddressType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('address1', TextType::class)
-            ->add('address2', TextType::class, ['required' => false])
-            ->add('address3', TextType::class, ['required' => false])
-            ->add('zipCode', TextType::class)
-            ->add('city', TextType::class)
-            ->add('region', TextType::class)
-            ->add('country', TextType::class)
+            ->add(
+                'address1',
+                TextType::class,
+                [
+                    'label' => 'Adresse',
+                    'empty_data' => ''
+                ]
+            )
+            ->add('address2', TextType::class, ['required' => false, 'label' => 'Adresse (suite)'])
+            ->add('address3', TextType::class, ['required' => false, 'label' => 'Adresse (suite)'])
+            ->add(
+                'zipCode',
+                TextType::class,
+                [
+                    'label' => 'Code postal',
+                    'empty_data' => ''
+                ]
+            )
+            ->add(
+                'city',
+                TextType::class,
+                [
+                    'label' => 'Ville',
+                    'empty_data' => ''
+                ]
+            )
+            ->add(
+                'region',
+                TextType::class,
+                [
+                    'label' => 'Département / Région',
+                    'empty_data' => ''
+                ]
+            )
+            ->add(
+                'country',
+                TextType::class,
+                [
+                    'label' => 'Pays',
+                    'empty_data' => ''
+                ]
+            )
             ->add('position', PositionType::class, ['label' => false])
-            ->add('phone', TextType::class)
-            ->add('phone2', TextType::class, ['required' => false]);
+            ->add(
+                'phone',
+                TextType::class,
+                [
+                    'label' => 'Téléphone',
+                    'empty_data' => ''
+                ]
+            )
+            ->add('phone2', TextType::class, ['required' => false, 'label' => 'Téléphone (autre)']);
     }
 
     public function configureOptions(OptionsResolver $resolver)
