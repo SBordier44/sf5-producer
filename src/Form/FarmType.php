@@ -17,6 +17,13 @@ class FarmType extends AbstractType
     {
         $builder
             ->add(
+                'image',
+                ImageType::class,
+                [
+                    'label' => false
+                ]
+            )
+            ->add(
                 'name',
                 TextType::class,
                 [
@@ -29,7 +36,7 @@ class FarmType extends AbstractType
                 'description',
                 TextareaType::class,
                 [
-                    'label' => 'Nom de l\'exploitation',
+                    'label' => 'Description de l\'exploitation',
                     'empty_data' => ''
                 ]
             );

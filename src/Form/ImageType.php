@@ -26,7 +26,7 @@ class ImageType extends AbstractType
             'file',
             FileType::class,
             [
-                'label' => 'Image',
+                'label' => 'Photo',
                 'required' => false
             ]
         );

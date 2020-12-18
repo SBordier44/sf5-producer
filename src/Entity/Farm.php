@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class Farm
@@ -48,6 +48,12 @@ class Farm
      * @Groups({"read"})
      */
     private ?Address $address = null;
+
+    /**
+     * @ORM\Embedded(class="Image")
+     * @Assert\Valid
+     */
+    private Image $image;
 
     /**
      * @return Address|null
@@ -136,6 +142,24 @@ class Farm
     public function setDescription(?string $description): Farm
     {
         $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return Image
+     */
+    public function getImage(): Image
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param Image $image
+     * @return Farm
+     */
+    public function setImage(Image $image): Farm
+    {
+        $this->image = $image;
         return $this;
     }
 }
