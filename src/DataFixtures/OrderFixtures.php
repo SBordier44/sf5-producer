@@ -32,8 +32,10 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
 
             $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 0, 5);
             if ($k % 2 === 0) {
-                $order = new Order();
-                $order->setCustomer($customer);
+                $order = (new Order())
+                    ->setCustomer($customer)
+                    ->setFarm($farm);
+
                 $manager->persist($order);
             }
 

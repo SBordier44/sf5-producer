@@ -28,7 +28,9 @@ class OrderController extends AbstractController
      */
     public function create(): RedirectResponse
     {
-        $order = (new Order())->setCustomer($this->getUser());
+        $order = (new Order())
+            ->setCustomer($this->getUser())
+            ->setFarm($this->getUser()->getCart()->first()->getProduct()->getFarm());
 
         /** @var CartItem $cartItem */
         foreach ($this->getUser()->getCart() as $cartItem) {
@@ -58,6 +60,22 @@ class OrderController extends AbstractController
             'ui/order/history.html.twig',
             [
                 'orders' => $orderRepository->findByCustomer($this->getUser())
+            ]
+        );
+    }
+
+    /**
+     * @param OrderRepository $orderRepository
+     * @return Response
+     * @Route("/manage", name="order_manage")
+     * @IsGranted("ROLE_PRODUCER")
+     */
+    public function manage(OrderRepository $orderRepository): Response
+    {
+        return $this->render(
+            'ui/order/manage.html.twig',
+            [
+                'orders' => $orderRepository->findByFarm($this->getUser()->getFarm())
             ]
         );
     }
