@@ -148,6 +148,47 @@ class OrderTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
+    //
+    public function testSuccessfullOrderManage(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_manage'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testRedirectToLoginIfUserIsNotLoggedForOrderManage(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_manage'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function testAccessDeniedIfUserIsNotAProducerForOrderManage(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_manage'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
     public function testAccessDeniedCancelOrder(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");

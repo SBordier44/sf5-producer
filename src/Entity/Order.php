@@ -54,6 +54,13 @@ class Order
     private Customer $customer;
 
     /**
+     * @var Farm
+     * @ORM\ManyToOne(targetEntity="App\Entity\Farm")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private Farm $farm;
+
+    /**
      * @var Collection
      * @ORM\OneToMany(targetEntity="App\Entity\OrderLine", mappedBy="order", cascade={"persist"})
      */
@@ -162,6 +169,24 @@ class Order
     public function setCanceledAt(DateTimeImmutable $canceledAt): Order
     {
         $this->canceledAt = $canceledAt;
+        return $this;
+    }
+
+    /**
+     * @return Farm
+     */
+    public function getFarm(): Farm
+    {
+        return $this->farm;
+    }
+
+    /**
+     * @param Farm $farm
+     * @return Order
+     */
+    public function setFarm(Farm $farm): Order
+    {
+        $this->farm = $farm;
         return $this;
     }
 }
