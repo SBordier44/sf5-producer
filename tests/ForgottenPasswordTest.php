@@ -56,7 +56,8 @@ class ForgottenPasswordTest extends WebTestCase
 
         $form = $crawler->filter('form[name=reset_password]')->form(
             [
-                'reset_password[plainPassword]' => 'NEWpassword'
+                'reset_password[plainPassword][first]' => 'NEWpassword',
+                'reset_password[plainPassword][second]' => 'NEWpassword'
             ]
         );
 
@@ -107,12 +108,12 @@ class ForgottenPasswordTest extends WebTestCase
     }
 
     /**
+     * @param array $formData
      * @param string $email
-     * @param string $password
      * @param string $errorMessage
      * @dataProvider provideBadRequestsForResetPassword
      */
-    public function testFailedResetPassword(string $email, string $password, string $errorMessage): void
+    public function testFailedResetPassword(array $formData, string $errorMessage, string $email): void
     {
         $client = static::createClient();
 
@@ -150,11 +151,7 @@ class ForgottenPasswordTest extends WebTestCase
             )
         );
 
-        $form = $crawler->filter('form[name=reset_password]')->form(
-            [
-                'reset_password[plainPassword]' => $password
-            ]
-        );
+        $form = $crawler->filter('form[name=reset_password]')->form($formData);
 
         $client->submit($form);
 
@@ -165,10 +162,30 @@ class ForgottenPasswordTest extends WebTestCase
 
     public function provideBadRequestsForResetPassword(): Generator
     {
-        yield ['producer@email.com', '', 'Cette valeur ne doit pas être vide.'];
-        yield ['producer@email.com', 'fail', 'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.'];
-        yield ['customer@email.com', '', 'Cette valeur ne doit pas être vide.'];
-        yield ['customer@email.com', 'fail', 'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.'];
+        yield [
+            [
+                'reset_password[plainPassword][first]' => '',
+                'reset_password[plainPassword][second]' => '',
+            ],
+            'Cette valeur ne doit pas être vide.',
+            'producer@email.com'
+        ];
+        yield [
+            [
+                'reset_password[plainPassword][first]' => 'fail123',
+                'reset_password[plainPassword][second]' => 'fail456',
+            ],
+            'Les mots de passe ne correspondent pas.',
+            'producer@email.com'
+        ];
+        yield [
+            [
+                'reset_password[plainPassword][first]' => 'fail123',
+                'reset_password[plainPassword][second]' => 'fail123',
+            ],
+            'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.',
+            'producer@email.com'
+        ];
     }
 
     public function testFailedResetPasswordWithBadToken(): void
