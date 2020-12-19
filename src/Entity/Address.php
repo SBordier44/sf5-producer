@@ -17,7 +17,7 @@ class Address
 {
     /**
      * @ORM\Column(nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?string $address = null;
@@ -30,7 +30,7 @@ class Address
 
     /**
      * @ORM\Column(length=5, nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Assert\Regex(pattern="/^[A-Za-z0-9]{5}$/", message="Code postal invalide.")
      * @Groups({"read"})
      */
@@ -38,35 +38,35 @@ class Address
 
     /**
      * @ORM\Column(nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?string $city = null;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?string $region = null;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?string $country = null;
 
     /**
      * @ORM\Embedded(class="Position")
-     * @Assert\Valid
+     * @Assert\Valid(groups={"edit"})
      * @Groups({"read"})
      */
     private ?Position $position = null;
 
     /**
      * @ORM\Column(length=10, nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Assert\Regex(pattern="/^[0-9]{10}$/")
      * @Groups({"read"})
      */

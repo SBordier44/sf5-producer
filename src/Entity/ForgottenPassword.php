@@ -17,8 +17,9 @@ class ForgottenPassword
 {
     /**
      * @ORM\Column(type="uuid", unique=true, nullable=true)
+     * @var mixed $token
      */
-    private ?Uuid $token;
+    private $token;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
@@ -32,18 +33,19 @@ class ForgottenPassword
     }
 
     /**
-     * @return Uuid|null
+     * @return mixed
      */
-    public function getToken(): ?Uuid
+    public function getToken()
     {
         return $this->token;
     }
 
     /**
-     * @param Uuid $token
+     * @param mixed $token
      * @return ForgottenPassword
+     * @codeCoverageIgnore
      */
-    public function setToken(Uuid $token): ForgottenPassword
+    public function setToken($token): ForgottenPassword
     {
         $this->token = $token;
         return $this;
@@ -51,6 +53,7 @@ class ForgottenPassword
 
     /**
      * @return DateTimeImmutable|null
+     * @codeCoverageIgnore
      */
     public function getRequestedAt(): ?DateTimeImmutable
     {
@@ -60,6 +63,7 @@ class ForgottenPassword
     /**
      * @param DateTimeImmutable $requestedAt
      * @return ForgottenPassword
+     * @codeCoverageIgnore
      */
     public function setRequestedAt(DateTimeImmutable $requestedAt): ForgottenPassword
     {

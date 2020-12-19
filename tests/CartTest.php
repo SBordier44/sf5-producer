@@ -2,7 +2,10 @@
 
 namespace App\Tests;
 
+use App\Entity\Farm;
+use App\Entity\Producer;
 use App\Entity\Product;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +23,7 @@ class CartTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $product = $entityManager->getRepository(Product::class)->findOneBy([]);
 
         $client->request(
@@ -106,5 +110,48 @@ class CartTest extends WebTestCase
         $client->followRedirect();
 
         self::assertRouteSame('security_login');
+    }
+
+    public function testAccessDeniedAddToCart(): void
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                "cart_add",
+                [
+                    "id" => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer1@email.com");
+
+        $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $entityManager->getRepository(Product::class)->findOneByFarm($farm);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                "cart_add",
+                [
+                    "id" => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 }

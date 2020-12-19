@@ -1,18 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
+use App\Entity\Producer;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RegistrationType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
@@ -46,10 +51,22 @@ class RegistrationType extends AbstractType
                     'label' => 'Nom',
                     'empty_data' => ''
                 ]
+            )
+            ->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                function (FormEvent $event): void {
+                    $user = $event->getData();
+
+                    if (!$user instanceof Producer) {
+                        return;
+                    }
+
+                    $event->getForm()->add('farm', FarmType::class, ['label' => false]);
+                }
             );
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [

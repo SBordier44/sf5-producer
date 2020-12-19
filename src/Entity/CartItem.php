@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 /**
  * Class CartItem
@@ -15,11 +16,12 @@ use Symfony\Component\Uid\Uuid;
 class CartItem
 {
     /**
-     * @var Uuid
      * @ORM\Id
      * @ORM\Column(type="uuid")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private Uuid $id;
+    private UuidInterface $id;
 
     /**
      * @var int
@@ -42,9 +44,9 @@ class CartItem
     private ?Customer $customer = null;
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -64,16 +66,6 @@ class CartItem
     public function setCustomer(Customer $customer): CartItem
     {
         $this->customer = $customer;
-        return $this;
-    }
-
-    /**
-     * @param Uuid $id
-     * @return CartItem
-     */
-    public function setId(Uuid $id): CartItem
-    {
-        $this->id = $id;
         return $this;
     }
 

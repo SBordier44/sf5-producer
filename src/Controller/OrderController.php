@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * Class OrderController
@@ -29,14 +28,11 @@ class OrderController extends AbstractController
      */
     public function create(): RedirectResponse
     {
-        $order = (new Order())
-            ->setId(Uuid::v4())
-            ->setCustomer($this->getUser());
+        $order = (new Order())->setCustomer($this->getUser());
 
         /** @var CartItem $cartItem */
         foreach ($this->getUser()->getCart() as $cartItem) {
             $line = (new OrderLine())
-                ->setId(Uuid::v4())
                 ->setOrder($order)
                 ->setQuantity($cartItem->getQuantity())
                 ->setProduct($cartItem->getProduct())

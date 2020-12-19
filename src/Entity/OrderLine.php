@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -16,11 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class OrderLine
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      * @ORM\Id
      * @ORM\Column(type="uuid")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private Uuid $id;
+    private UuidInterface $id;
 
     /**
      * @var Order
@@ -49,21 +52,11 @@ class OrderLine
     private ?Product $product = null;
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
-    }
-
-    /**
-     * @param Uuid $id
-     * @return OrderLine
-     */
-    public function setId(Uuid $id): OrderLine
-    {
-        $this->id = $id;
-        return $this;
     }
 
     /**

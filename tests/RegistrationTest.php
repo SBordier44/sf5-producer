@@ -13,8 +13,9 @@ class RegistrationTest extends WebTestCase
     /**
      * @dataProvider provideRoles
      * @param string $role
+     * @param array $formData
      */
-    public function testSuccessfullRegistration(string $role): void
+    public function testSuccessfullRegistration(string $role, array $formData): void
     {
         $client = static::createClient();
 
@@ -31,14 +32,7 @@ class RegistrationTest extends WebTestCase
             )
         );
 
-        $form = $crawler->filter('form[name=registration]')->form(
-            [
-                'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
-                'registration[firstName]' => 'John',
-                'registration[lastName]' => 'Doe',
-            ]
-        );
+        $form = $crawler->filter('form[name=registration]')->form($formData);
 
         $client->submit($form);
 
@@ -47,8 +41,35 @@ class RegistrationTest extends WebTestCase
 
     public function provideRoles(): Generator
     {
-        yield ['producer'];
-        yield ['customer'];
+        yield [
+            'producer',
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ]
+        ];
+        yield [
+            'producer',
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Exploitation'
+            ]
+        ];
+        yield [
+            'customer',
+            [
+                'registration[email]' => 'jane.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'Jane',
+                'registration[lastName]' => 'Doe',
+            ]
+        ];
     }
 
     /**
@@ -85,77 +106,173 @@ class RegistrationTest extends WebTestCase
 
     public function provideBadRequests(): Generator
     {
-        foreach (['customer', 'producer'] as $role) {
-            yield [
-                [
-                    'registration[email]' => '',
-                    'registration[plainPassword]' => 'password',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette valeur ne doit pas être vide.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'john.doe@email.com',
-                    'registration[plainPassword]' => '',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette valeur ne doit pas être vide.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'john.doe@email.com',
-                    'registration[plainPassword]' => 'password',
-                    'registration[firstName]' => '',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette valeur ne doit pas être vide.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'john.doe@email.com',
-                    'registration[plainPassword]' => 'password',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => '',
-                ],
-                'Cette valeur ne doit pas être vide.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'fail@mailfake',
-                    'registration[plainPassword]' => 'password',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette valeur n\'est pas une adresse email valide.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'john.doe@email.com',
-                    'registration[plainPassword]' => 'fail',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.',
-                $role,
-            ];
-            yield [
-                [
-                    'registration[email]' => 'customer@email.com',
-                    'registration[plainPassword]' => 'password',
-                    'registration[firstName]' => 'John',
-                    'registration[lastName]' => 'Doe',
-                ],
-                'Cette adresse email est déjà utilisée.',
-                $role,
-            ];
-        }
+        yield from $this->provideProducerBadRequests();
+        yield from $this->provideCustomerBadRequests();
+    }
+
+    public function provideProducerBadRequests(): Generator
+    {
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => ''
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => '',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => '',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => '',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => '',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'fail@mailfake',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette valeur n\'est pas une adresse email valide.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'fail',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'customer@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe',
+                'registration[farm][name]' => 'Ferme'
+            ],
+            'Cette adresse email est déjà utilisée.',
+            "producer"
+        ];
+    }
+
+    public function provideCustomerBadRequests(): Generator
+    {
+        yield [
+            [
+                'registration[email]' => '',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => '',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => '',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => ''
+            ],
+            'Cette valeur ne doit pas être vide.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'fail@mailfake',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette valeur n\'est pas une adresse email valide.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword]' => 'fail',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.',
+            "customer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'customer@email.com',
+                'registration[plainPassword]' => 'password',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Cette adresse email est déjà utilisée.',
+            "customer"
+        ];
     }
 }

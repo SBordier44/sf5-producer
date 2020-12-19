@@ -47,6 +47,7 @@ class FarmTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $farm = $entityManager->getRepository(Farm::class)->findOneBy([]);
 
         $client->request(
@@ -54,7 +55,7 @@ class FarmTest extends WebTestCase
             $router->generate(
                 'farm_show',
                 [
-                    'id' => $farm->getId()
+                    'slug' => $farm->getSlug()
                 ]
             )
         );
@@ -70,6 +71,7 @@ class FarmTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $farm = $entityManager->getRepository(Farm::class)->findOneBy([]);
 
         $client->request(
@@ -77,7 +79,7 @@ class FarmTest extends WebTestCase
             $router->generate(
                 'farm_show',
                 [
-                    'id' => $farm->getId()
+                    'slug' => $farm->getSlug()
                 ]
             )
         );
@@ -99,7 +101,7 @@ class FarmTest extends WebTestCase
 
         $form = $crawler->filter('form[name=farm]')->form(
             [
-                'farm[name]' => 'NextGenExploit',
+                'farm[name]' => 'NextGenExploit Modified',
                 'farm[description]' => 'Super Exploitation de nouvelle génération',
                 'farm[address][address]' => '25 Rue de la pelouse verte',
                 'farm[address][addressExtra]' => '',
