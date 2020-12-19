@@ -36,7 +36,7 @@ class UserTest extends WebTestCase
     }
 
     /**
-     * @dataProvider provideBadRequests
+     * @dataProvider provideBadRequestsPasswordEdit
      * @param array $formData
      * @param string $errorMessage
      */
@@ -74,7 +74,7 @@ class UserTest extends WebTestCase
         self::assertRouteSame('security_login');
     }
 
-    public function provideBadRequests(): \Generator
+    public function provideBadRequestsPasswordEdit(): \Generator
     {
         yield [
             [
@@ -107,6 +107,105 @@ class UserTest extends WebTestCase
                 'user_password[plainPassword][second]' => 'password1234'
             ],
             'Le mot de passe saisi n\'est pas celui utilisé actuellement.'
+        ];
+    }
+
+    public function testSuccessfullEditInfo(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $form = $crawler->filter('form[name=user_info]')->form(
+            [
+                'user_info[email]' => 'john.doe@email.com',
+                'user_info[firstName]' => 'John',
+                'user_info[lastName]' => 'Doe'
+            ]
+        );
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+    }
+
+    /**
+     * @dataProvider provideBadRequestsUserInfo
+     * @param array $formData
+     * @param string $errorMessage
+     */
+    public function testBadRequestEditInfo(array $formData, string $errorMessage): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+
+        $form = $crawler->filter('form[name=user_info]')->form($formData);
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains('span.form-error-message', $errorMessage);
+    }
+
+    public function testRedirectToLoginIfUserIsNotLoggedForUserInfoEdit(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+    }
+
+    public function provideBadRequestsUserInfo(): \Generator
+    {
+        yield [
+            [
+                'user_info[email]' => '',
+                'user_info[firstName]' => 'John',
+                'user_info[lastName]' => 'Doe'
+            ],
+            'Cette valeur ne doit pas être vide.'
+        ];
+        yield [
+            [
+                'user_info[email]' => 'john.doe@email.com',
+                'user_info[firstName]' => '',
+                'user_info[lastName]' => 'Doe'
+            ],
+            'Cette valeur ne doit pas être vide.'
+        ];
+        yield [
+            [
+                'user_info[email]' => 'john.doe@email.com',
+                'user_info[firstName]' => 'John',
+                'user_info[lastName]' => ''
+            ],
+            'Cette valeur ne doit pas être vide.'
+        ];
+        yield [
+            [
+                'user_info[email]' => 'invalid@Mail',
+                'user_info[firstName]' => 'John',
+                'user_info[lastName]' => 'Doe'
+            ],
+            'Cette valeur n\'est pas une adresse email valide.'
         ];
     }
 }
