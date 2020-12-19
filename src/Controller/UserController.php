@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\UserInfoType;
 use App\Form\UserPasswordType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,6 +41,29 @@ class UserController extends AbstractController
 
         return $this->render(
             'ui/user/edit_password.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @Route("/edit-info", name="user_edit_info")
+     */
+    public function editInfo(Request $request): Response
+    {
+        $form = $this->createForm(UserInfoType::class, $this->getUser())->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Vos informations personnelles ont étés modifiées avec succès');
+            return $this->redirectToRoute('user_edit_info');
+        }
+
+        return $this->render(
+            'ui/user/edit_info.html.twig',
             [
                 'form' => $form->createView()
             ]
