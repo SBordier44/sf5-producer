@@ -2,6 +2,8 @@
 
 namespace App\Tests;
 
+use App\Entity\Farm;
+use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
@@ -41,7 +43,11 @@ class ProductTest extends WebTestCase
         /** @var EntityManagerInterface $manager */
         $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $manager->getRepository(Product::class)->findOneBy([]);
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $farm = $manager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $manager->getRepository(Product::class)->findOneByFarm($farm);
 
         $crawler = $client->request(
             Request::METHOD_GET,
@@ -78,7 +84,11 @@ class ProductTest extends WebTestCase
         /** @var EntityManagerInterface $manager */
         $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $manager->getRepository(Product::class)->findOneBy([]);
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $farm = $manager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $manager->getRepository(Product::class)->findOneByFarm($farm);
 
         $crawler = $client->request(
             Request::METHOD_GET,
@@ -157,7 +167,11 @@ class ProductTest extends WebTestCase
         /** @var EntityManagerInterface $manager */
         $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $manager->getRepository(Product::class)->findOneBy([]);
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $farm = $manager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $manager->getRepository(Product::class)->findOneByFarm($farm);
 
         $crawler = $client->request(
             Request::METHOD_GET,
@@ -185,7 +199,11 @@ class ProductTest extends WebTestCase
         /** @var EntityManagerInterface $manager */
         $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $manager->getRepository(Product::class)->findOneBy([]);
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $farm = $manager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $manager->getRepository(Product::class)->findOneByFarm($farm);
 
         $crawler = $client->request(
             Request::METHOD_GET,
@@ -215,7 +233,11 @@ class ProductTest extends WebTestCase
         /** @var EntityManagerInterface $manager */
         $manager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $manager->getRepository(Product::class)->findOneBy([]);
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $farm = $manager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $manager->getRepository(Product::class)->findOneByFarm($farm);
 
         $client->request(
             Request::METHOD_GET,

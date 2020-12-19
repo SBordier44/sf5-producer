@@ -99,4 +99,34 @@ class LoginTest extends WebTestCase
 
         self::assertSelectorTextContains('div.alert-danger', "Identifiants invalides.");
     }
+
+    /**
+     * @param string $email
+     * @dataProvider provideEmails
+     */
+    public function testInvalidCsrfTokenLogin(string $email): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate("security_login"));
+
+        $form = $crawler->filter("form[name=login]")->form(
+            [
+                "_csrf_token" => "fail",
+                "email" => $email,
+                "password" => "password"
+            ]
+        );
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertSelectorTextContains("div.alert-danger", 'Jeton CSRF invalide.');
+    }
 }

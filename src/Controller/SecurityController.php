@@ -46,7 +46,6 @@ class SecurityController extends AbstractController
                 'validation_groups' => ['Default', 'password']
             ]
         )->handleRequest($request);
-        $user->setId(Uuid::v4());
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($passwordEncoder->encodePassword($user, $user->getPlainPassword()));
@@ -81,6 +80,7 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @codeCoverageIgnore
      * @Route("/logout", name="security_logout")
      */
     public function logout(): void

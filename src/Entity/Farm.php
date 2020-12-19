@@ -5,36 +5,46 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Farm
  * @package App\Entity
  * @ORM\Entity()
+ * @ORM\EntityListeners({"App\EntityListener\FarmListener"})
  */
 class Farm
 {
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      * @Groups({"read"})
      */
-    private Uuid $id;
+    private ?UuidInterface $id = null;
 
     /**
-     * @ORM\Column(nullable=true)
+     * @ORM\Column()
      * @Assert\NotBlank
      * @Groups({"read"})
      */
-    private ?string $name = null;
+    private string $name = '';
 
     /**
      * @ORM\Column(nullable=true, type="text")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      */
     private ?string $description = null;
+
+    /**
+     * @ORM\Column(unique=true)
+     * @Groups({"read"})
+     */
+    private string $slug;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Producer", mappedBy="farm")
@@ -44,14 +54,14 @@ class Farm
 
     /**
      * @ORM\Embedded(class="App\Entity\Address")
-     * @Assert\Valid
+     * @Assert\Valid(groups={"edit"})
      * @Groups({"read"})
      */
     private ?Address $address = null;
 
     /**
      * @ORM\Embedded(class="Image")
-     * @Assert\Valid
+     * @Assert\Valid(groups={"edit"})
      */
     private Image $image;
 
@@ -74,36 +84,26 @@ class Farm
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface|null
      */
-    public function getId(): Uuid
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
 
     /**
-     * @param Uuid $id
-     * @return Farm
+     * @return string
      */
-    public function setId(Uuid $id): Farm
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string|null $name
+     * @param string $name
      * @return Farm
      */
-    public function setName(?string $name): Farm
+    public function setName(string $name): Farm
     {
         $this->name = $name;
         return $this;
@@ -160,6 +160,24 @@ class Farm
     public function setImage(Image $image): Farm
     {
         $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return Farm
+     */
+    public function setSlug(string $slug): Farm
+    {
+        $this->slug = $slug;
         return $this;
     }
 }

@@ -44,9 +44,11 @@ class ProductController extends AbstractController
      */
     public function create(Request $request): Response
     {
-        $form = $this->createForm(ProductType::class, new Product())->handleRequest($request);
+        $product = new Product();
+        $form = $this->createForm(ProductType::class, $product)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($product);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'Votre produit à été créé avec succès');
             return $this->redirectToRoute('product_index');
@@ -72,6 +74,7 @@ class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($product);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'Votre produit à été modifié avec succès');
             return $this->redirectToRoute('product_index');
@@ -97,6 +100,7 @@ class ProductController extends AbstractController
         $form = $this->createForm(StockType::class, $product)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($product);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'Le stock de votre produit à été modifié avec succès');
             return $this->redirectToRoute('product_index');

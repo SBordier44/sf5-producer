@@ -35,7 +35,7 @@ class CartController extends AbstractController
         return $this->redirectToRoute(
             'farm_show',
             [
-                'id' => $product->getFarm()->getId()
+                'slug' => $product->getFarm()->getSlug()
             ]
         );
     }

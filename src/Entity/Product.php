@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -19,8 +20,10 @@ class Product
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private Uuid $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\Column(type="text")
@@ -45,7 +48,7 @@ class Product
      * @ORM\ManyToOne(targetEntity="App\Entity\Farm")
      * @ORM\JoinColumn(onDelete="CASCADE", nullable=false)
      */
-    private Farm $farm;
+    private ?Farm $farm = null;
 
     /**
      * @ORM\Embedded(class="Price")
@@ -57,24 +60,14 @@ class Product
      * @ORM\Embedded(class="Image")
      * @Assert\Valid
      */
-    private Image $image;
+    private ?Image $image = null;
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
-    }
-
-    /**
-     * @param Uuid $id
-     * @return Product
-     */
-    public function setId(Uuid $id): Product
-    {
-        $this->id = $id;
-        return $this;
     }
 
     /**
@@ -132,18 +125,18 @@ class Product
     }
 
     /**
-     * @return Farm
+     * @return Farm|null
      */
-    public function getFarm(): Farm
+    public function getFarm(): ?Farm
     {
         return $this->farm;
     }
 
     /**
-     * @param Farm $farm
+     * @param Farm|null $farm
      * @return Product
      */
-    public function setFarm(Farm $farm): Product
+    public function setFarm(?Farm $farm): Product
     {
         $this->farm = $farm;
         return $this;
@@ -173,18 +166,18 @@ class Product
     }
 
     /**
-     * @return Image
+     * @return Image|null
      */
-    public function getImage(): Image
+    public function getImage(): ?Image
     {
         return $this->image;
     }
 
     /**
-     * @param Image $image
+     * @param Image|null $image
      * @return Product
      */
-    public function setImage(Image $image): Product
+    public function setImage(?Image $image): Product
     {
         $this->image = $image;
         return $this;

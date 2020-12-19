@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Entity\Order;
 use App\Entity\Product;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -143,6 +144,31 @@ class OrderTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $client->request(Request::METHOD_GET, $router->generate('order_history'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedCancelOrder(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy(["state" => "created"]);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                "order_cancel",
+                [
+                    "id" => $order->getId()
+                ]
+            )
+        );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }

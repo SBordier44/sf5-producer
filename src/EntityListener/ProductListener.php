@@ -33,13 +33,14 @@ class ProductListener
 
     public function prePersist(Product $product): void
     {
+        $this->upload($product);
+
         if ($product->getFarm() !== null) {
-            return;
+            return; // @codeCoverageIgnore
         }
         if ($this->security->getUser()) {
             $product->setFarm($this->security->getUser()->getFarm());
         }
-        $this->upload($product);
     }
 
     public function preUpdate(Product $product): void

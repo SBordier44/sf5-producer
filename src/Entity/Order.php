@@ -8,7 +8,8 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * Class Order
@@ -19,11 +20,14 @@ use Symfony\Component\Uid\Uuid;
 class Order
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      * @ORM\Column(type="uuid")
      */
-    private Uuid $id;
+    private UuidInterface $id;
+
     /**
      * @var string
      * @ORM\Column
@@ -62,21 +66,11 @@ class Order
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
-    }
-
-    /**
-     * @param Uuid $id
-     * @return Order
-     */
-    public function setId(Uuid $id): Order
-    {
-        $this->id = $id;
-        return $this;
     }
 
     /**
