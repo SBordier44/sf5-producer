@@ -45,7 +45,8 @@ class RegistrationTest extends WebTestCase
             'producer',
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -55,7 +56,8 @@ class RegistrationTest extends WebTestCase
             'producer',
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Exploitation'
@@ -65,7 +67,8 @@ class RegistrationTest extends WebTestCase
             'customer',
             [
                 'registration[email]' => 'jane.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'Jane',
                 'registration[lastName]' => 'Doe',
             ]
@@ -115,7 +118,19 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password123',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Les mots de passe ne correspondent pas.',
+            "producer"
+        ];
+        yield [
+            [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => ''
@@ -126,7 +141,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => '',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -137,7 +153,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => '',
+                'registration[plainPassword][first]' => '',
+                'registration[plainPassword][second]' => '',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -148,7 +165,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => '',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -159,7 +177,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => '',
                 'registration[farm][name]' => 'Ferme'
@@ -170,7 +189,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'fail@mailfake',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -181,7 +201,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'fail',
+                'registration[plainPassword][first]' => 'fail',
+                'registration[plainPassword][second]' => 'fail',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -192,7 +213,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'customer@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
                 'registration[farm][name]' => 'Ferme'
@@ -206,8 +228,20 @@ class RegistrationTest extends WebTestCase
     {
         yield [
             [
+                'registration[email]' => 'john.doe@email.com',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password123',
+                'registration[firstName]' => 'John',
+                'registration[lastName]' => 'Doe'
+            ],
+            'Les mots de passe ne correspondent pas.',
+            "customer"
+        ];
+        yield [
+            [
                 'registration[email]' => '',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe'
             ],
@@ -217,7 +251,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => '',
+                'registration[plainPassword][first]' => '',
+                'registration[plainPassword][second]' => '',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe'
             ],
@@ -227,7 +262,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => '',
                 'registration[lastName]' => 'Doe'
             ],
@@ -237,7 +273,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => ''
             ],
@@ -247,7 +284,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'fail@mailfake',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe'
             ],
@@ -257,7 +295,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'john.doe@email.com',
-                'registration[plainPassword]' => 'fail',
+                'registration[plainPassword][first]' => 'fail',
+                'registration[plainPassword][second]' => 'fail',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe'
             ],
@@ -267,7 +306,8 @@ class RegistrationTest extends WebTestCase
         yield [
             [
                 'registration[email]' => 'customer@email.com',
-                'registration[plainPassword]' => 'password',
+                'registration[plainPassword][first]' => 'password',
+                'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe'
             ],
