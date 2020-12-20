@@ -30,7 +30,10 @@
 
                                 </td>
                                 <td class="text-center">
-
+                                    {% if is_granted('refuse', order) and workflow_can(order, 'refuse') %}
+                                        <a href="{{ path('order_refuse', {id: order.id}) }}"
+                                           class="btn btn-outline-warning">Refuser</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
