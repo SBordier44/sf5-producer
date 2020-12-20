@@ -29,13 +29,16 @@
                                 <td class="text-center">
                                     {% if order.state == 'created' %}
                                         <span class="badge badge-primary">En cours de traitement</span>
-                                    {% elseif order.state == 'cancelled' %}
+                                    {% elseif order.state == 'canceled' %}
                                         <span class="badge badge-danger">Annulée</span>
+                                    {% elseif order.state == 'refused' %}
+                                        <span class="badge badge-warning">Refusée</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    {% if is_granted('cancel', order) %}
-                                        <a href="{{ path('order_cancel', {id: order.id}) }}" class="btn btn-outline-warning">Annuler</a>
+                                    {% if is_granted('cancel', order) and workflow_can(order, 'cancel') %}
+                                        <a href="{{ path('order_cancel', {id: order.id}) }}"
+                                           class="btn btn-outline-warning">Annuler</a>
                                     {% endif %}
                                 </td>
                             </tr>

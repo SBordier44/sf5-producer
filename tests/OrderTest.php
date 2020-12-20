@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Entity\Order;
+use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -22,6 +23,7 @@ class OrderTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $product = $entityManager->getRepository(Product::class)->findOneBy([]);
 
         $client->request(
@@ -64,6 +66,48 @@ class OrderTest extends WebTestCase
         self::assertEquals('canceled', $order->getState());
     }
 
+    public function testSuccessfullRefuseOrder(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $client->request(Request::METHOD_GET, $router->generate('order_manage'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        /** @var Order $order */
+        $order = $entityManager->getRepository(Order::class)->findOneBy(
+            [
+                'state' => 'created',
+                'farm' => $producer->getFarm()
+            ]
+        );
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'order_refuse',
+                [
+                    'id' => $order->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        self::assertEquals('refused', $order->getState());
+    }
+
     public function testAccessDeniedOrderCreateForProducer(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');
@@ -72,6 +116,7 @@ class OrderTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $product = $entityManager->getRepository(Product::class)->findOneBy([]);
 
         $client->request(
@@ -95,6 +140,7 @@ class OrderTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
         $product = $entityManager->getRepository(Product::class)->findOneBy([]);
 
         $client->request(
