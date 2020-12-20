@@ -108,6 +108,44 @@ class OrderTest extends WebTestCase
         self::assertEquals('refused', $order->getState());
     }
 
+    public function testSuccessfullSettleOrder(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        /** @var Order $order */
+        $order = $entityManager->getRepository(Order::class)->findOneBy(
+            [
+                'state' => 'accepted',
+                'farm' => $producer->getFarm()
+            ]
+        );
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'order_settle',
+                [
+                    'id' => $order->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        self::assertEquals('settled', $order->getState());
+    }
+
     public function testAccessDeniedOrderCreateForProducer(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');

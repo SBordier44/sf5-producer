@@ -53,6 +53,12 @@ class Order
     private ?DateTimeImmutable $refusedAt = null;
 
     /**
+     * @var DateTimeImmutable|null
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?DateTimeImmutable $settledAt = null;
+
+    /**
      * @var Customer
      * @ORM\ManyToOne(targetEntity="App\Entity\Customer")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -211,6 +217,24 @@ class Order
     public function setFarm(Farm $farm): Order
     {
         $this->farm = $farm;
+        return $this;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getSettledAt(): ?DateTimeImmutable
+    {
+        return $this->settledAt;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $settledAt
+     * @return Order
+     */
+    public function setSettledAt(?DateTimeImmutable $settledAt): Order
+    {
+        $this->settledAt = $settledAt;
         return $this;
     }
 }
