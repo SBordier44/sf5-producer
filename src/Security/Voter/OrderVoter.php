@@ -17,6 +17,7 @@ class OrderVoter extends Voter
     public const CANCEL = 'cancel';
     public const REFUSE = 'refuse';
     public const SETTLE = 'settle';
+    public const ACCEPT = 'accept';
 
     private WorkflowInterface $orderStateMachine;
 
@@ -27,7 +28,10 @@ class OrderVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        return $subject instanceof Order && in_array($attribute, [self::CANCEL, self::REFUSE, self::SETTLE]);
+        return $subject instanceof Order && in_array(
+            $attribute,
+            [self::CANCEL, self::REFUSE, self::SETTLE, self::ACCEPT]
+        );
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
@@ -48,6 +52,10 @@ class OrderVoter extends Voter
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::SETTLE);
+            case self::ACCEPT:
+                return $user instanceof Producer
+                    && $user->getFarm() === $subject->getFarm()
+                    && $this->orderStateMachine->can($subject, self::ACCEPT);
         }
 
         throw new AccessDeniedException("Vous n'avez pas accès à cette ressource.");

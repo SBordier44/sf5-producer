@@ -146,6 +146,70 @@ class OrderTest extends WebTestCase
         self::assertEquals('settled', $order->getState());
     }
 
+    public function testSuccessfullAcceptOrder(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        /** @var Order $order */
+        $order = $entityManager->getRepository(Order::class)->findOneBy(
+            [
+                'state' => 'created',
+                'farm' => $producer->getFarm()
+            ]
+        );
+
+        $crawler = $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'order_accept',
+                [
+                    'id' => $order->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $form = $crawler->filter('form[name=accept_order]')->form();
+        $csrfToken = $form->get('accept_order')['_token']->getValue();
+
+        $client->request(
+            Request::METHOD_POST,
+            $router->generate(
+                'order_accept',
+                [
+                    'id' => $order->getId()
+                ]
+            ),
+            [
+                'accept_order' => [
+                    '_token' => $csrfToken,
+                    'slots' => [
+                        ['startedAt' => '2022-01-01 10:00'],
+                        ['startedAt' => '2022-01-02 11:00']
+                    ]
+                ]
+            ]
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        self::assertEquals('accepted', $order->getState());
+
+        self::assertCount(2, $order->getSlots());
+    }
+
     public function testAccessDeniedOrderCreateForProducer(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');
