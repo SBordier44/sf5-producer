@@ -34,6 +34,10 @@
                                         <a href="{{ path('order_refuse', {id: order.id}) }}"
                                            class="btn btn-outline-warning">Refuser</a>
                                     {% endif %}
+                                    {% if is_granted('accept', order) and workflow_can(order, 'accept') %}
+                                        <a href="{{ path('order_accept', {id: order.id}) }}"
+                                           class="btn btn-outline-success">Accepter</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
