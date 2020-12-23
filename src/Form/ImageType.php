@@ -13,26 +13,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ImageType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add(
-            'path',
-            HiddenType::class,
-            [
-                'required' => false
-            ]
-        );
-        $builder->add(
-            'file',
-            FileType::class,
-            [
-                'label' => 'Photo',
-                'required' => false
-            ]
-        );
+        $builder
+            ->add(
+                'path',
+                HiddenType::class,
+                [
+                    'required' => false
+                ]
+            )
+            ->add(
+                'file',
+                FileType::class,
+                [
+                    'label' => 'Photo',
+                    'required' => false
+                ]
+            );
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('data_class', Image::class);
     }

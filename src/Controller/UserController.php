@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Form\UserInfoType;
-use App\Form\UserPasswordType;
+use App\Handler\UserInfoHandler;
+use App\Handler\UserPasswordHandler;
+use App\HandlerFactory\HandlerFactoryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Class UserController
@@ -22,50 +22,44 @@ class UserController extends AbstractController
 {
     /**
      * @param Request $request
-     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param HandlerFactoryInterface $handlerFactory
      * @return Response
      * @Route("/edit-password", name="user_edit_password")
      */
-    public function editPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function editPassword(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
-        $form = $this->createForm(UserPasswordType::class, $this->getUser())->handleRequest($request);
+        $handler = $handlerFactory->createHandler(UserPasswordHandler::class);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getUser()->setPassword(
-                $passwordEncoder->encodePassword($this->getUser(), $this->getUser()->getPlainPassword())
-            );
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('success', 'Votre mot de passe a été modifié avec succès.');
+        if ($handler->handle($request, $this->getUser())) {
             return $this->redirectToRoute('user_edit_password');
         }
 
         return $this->render(
             'ui/user/edit_password.html.twig',
             [
-                'form' => $form->createView()
+                'form' => $handler->createView()
             ]
         );
     }
 
     /**
      * @param Request $request
+     * @param HandlerFactoryInterface $handlerFactory
      * @return Response
      * @Route("/edit-info", name="user_edit_info")
      */
-    public function editInfo(Request $request): Response
+    public function editInfo(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
-        $form = $this->createForm(UserInfoType::class, $this->getUser())->handleRequest($request);
+        $handler = $handlerFactory->createHandler(UserInfoHandler::class);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('success', 'Vos informations personnelles ont étés modifiées avec succès');
+        if ($handler->handle($request, $this->getUser())) {
             return $this->redirectToRoute('user_edit_info');
         }
 
         return $this->render(
             'ui/user/edit_info.html.twig',
             [
-                'form' => $form->createView()
+                'form' => $handler->createView()
             ]
         );
     }

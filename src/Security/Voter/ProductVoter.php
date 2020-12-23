@@ -19,11 +19,13 @@ class ProductVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        return $subject instanceof Product && in_array($attribute, [self::UPDATE, self::DELETE, self::ADD_TO_CART]);
+        return $subject instanceof Product
+            && in_array($attribute, [self::UPDATE, self::DELETE, self::ADD_TO_CART]);
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
+        /** @var User $user */
         $user = $token->getUser();
 
         /** @var Product $subject */
@@ -41,7 +43,9 @@ class ProductVoter extends Voter
             return true;
         }
 
-        return $customer->getCart()->map(fn(CartItem $cartItem) => $cartItem->getProduct()->getFarm())->contains(
+        return $customer->getCart()->map(
+            fn(CartItem $cartItem) => $cartItem->getProduct()->getFarm()
+        )->contains(
             $product->getFarm()
         );
     }

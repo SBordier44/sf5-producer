@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class Farm
  * @package App\Entity
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\FarmRepository")
  * @ORM\EntityListeners({"App\EntityListener\FarmListener"})
  */
 class Farm
