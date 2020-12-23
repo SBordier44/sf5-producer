@@ -17,11 +17,12 @@ class EmailExistsValidator extends ConstraintValidator
         $this->userRepository = $userRepository;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if ($value === null || $value === '' || $this->userRepository->count(['email' => $value]) > 0) {
             return;
         }
+
         /*** @var EmailExists $constraint */
         $this->context->buildViolation($constraint->message)->addViolation();
     }

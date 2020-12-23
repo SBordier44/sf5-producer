@@ -28,10 +28,8 @@ class OrderVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        return $subject instanceof Order && in_array(
-            $attribute,
-            [self::CANCEL, self::REFUSE, self::SETTLE, self::ACCEPT]
-        );
+        return $subject instanceof Order
+            && in_array($attribute, [self::CANCEL, self::REFUSE, self::SETTLE, self::ACCEPT]);
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
@@ -44,14 +42,17 @@ class OrderVoter extends Voter
                 return $user instanceof Customer
                     && $user === $subject->getCustomer()
                     && $this->orderStateMachine->can($subject, self::CANCEL);
+
             case self::REFUSE:
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::REFUSE);
+
             case self::SETTLE:
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::SETTLE);
+
             case self::ACCEPT:
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()

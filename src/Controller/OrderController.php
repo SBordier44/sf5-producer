@@ -7,8 +7,10 @@ namespace App\Controller;
 use App\Entity\CartItem;
 use App\Entity\Order;
 use App\Entity\OrderLine;
-use App\Form\AcceptOrderType;
+use App\Handler\AcceptOrderHandler;
+use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\OrderRepository;
+use App\Security\Voter\OrderVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -42,12 +44,15 @@ class OrderController extends AbstractController
                 ->setQuantity($cartItem->getQuantity())
                 ->setProduct($cartItem->getProduct())
                 ->setPrice($cartItem->getProduct()->getPrice());
+
             $order->getLines()->add($line);
         }
 
         $this->getUser()->getCart()->clear();
+
         $this->getDoctrine()->getManager()->persist($order);
         $this->getDoctrine()->getManager()->flush();
+
         return $this->redirectToRoute('order_history');
     }
 
@@ -92,7 +97,7 @@ class OrderController extends AbstractController
      */
     public function cancel(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
     {
-        $orderStateMachine->apply($order, 'cancel');
+        $orderStateMachine->apply($order, OrderVoter::CANCEL);
         return $this->redirectToRoute('order_history');
     }
 
@@ -105,7 +110,7 @@ class OrderController extends AbstractController
      */
     public function refuse(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
     {
-        $orderStateMachine->apply($order, 'refuse');
+        $orderStateMachine->apply($order, OrderVoter::REFUSE);
         return $this->redirectToRoute('order_manage');
     }
 
@@ -118,30 +123,30 @@ class OrderController extends AbstractController
      */
     public function settle(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
     {
-        $orderStateMachine->apply($order, 'settle');
+        $orderStateMachine->apply($order, OrderVoter::SETTLE);
         return $this->redirectToRoute('order_manage');
     }
 
     /**
      * @param Request $request
      * @param Order $order
-     * @param WorkflowInterface $orderStateMachine
+     * @param HandlerFactoryInterface $handlerFactory
      * @return RedirectResponse
      * @Route("/{id}/accept", name="order_accept")
      * @IsGranted("accept", subject="order")
      */
-    public function accept(Request $request, Order $order, WorkflowInterface $orderStateMachine): Response
+    public function accept(Request $request, Order $order, HandlerFactoryInterface $handlerFactory): Response
     {
-        $form = $this->createForm(AcceptOrderType::class, $order)->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $orderStateMachine->apply($order, 'accept');
+        $handler = $handlerFactory->createHandler(AcceptOrderHandler::class);
+
+        if ($handler->handle($request, $order)) {
             return $this->redirectToRoute('order_manage');
         }
 
         return $this->render(
             'ui/order/accept.html.twig',
             [
-                'form' => $form->createView()
+                'form' => $handler->createView()
             ]
         );
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Workflow;
 
 use App\Entity\Order;
@@ -33,7 +35,9 @@ class OrderWorkflow implements EventSubscriberInterface
     {
         /** @var Order $order */
         $order = $event->getSubject();
+
         $order->setCanceledAt(new \DateTimeImmutable());
+
         $this->entityManager->flush();
     }
 
@@ -41,7 +45,9 @@ class OrderWorkflow implements EventSubscriberInterface
     {
         /** @var Order $order */
         $order = $event->getSubject();
+
         $order->setRefusedAt(new \DateTimeImmutable());
+
         $this->entityManager->flush();
     }
 
@@ -49,7 +55,9 @@ class OrderWorkflow implements EventSubscriberInterface
     {
         /** @var Order $order */
         $order = $event->getSubject();
+
         $order->setSettledAt(new \DateTimeImmutable());
+
         $this->entityManager->flush();
     }
 
@@ -57,7 +65,9 @@ class OrderWorkflow implements EventSubscriberInterface
     {
         /** @var Order $order */
         $order = $event->getSubject();
+
         $order->setAcceptedAt(new \DateTimeImmutable());
+
         $this->entityManager->flush();
     }
 }

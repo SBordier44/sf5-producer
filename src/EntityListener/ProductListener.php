@@ -10,20 +10,12 @@ use Symfony\Component\Uid\Uuid;
 
 class ProductListener
 {
-
-    /**
-     * @var Security
-     */
     private Security $security;
+
     private string $uploadWebDir;
+
     private string $uploadAbsoluteDir;
 
-    /**
-     * ProductListener constructor.
-     * @param Security $security
-     * @param string $uploadWebDir
-     * @param string $uploadAbsoluteDir
-     */
     public function __construct(Security $security, string $uploadWebDir, string $uploadAbsoluteDir)
     {
         $this->security = $security;
@@ -38,6 +30,7 @@ class ProductListener
         if ($product->getFarm() !== null) {
             return; // @codeCoverageIgnore
         }
+
         if ($this->security->getUser()) {
             $product->setFarm($this->security->getUser()->getFarm());
         }

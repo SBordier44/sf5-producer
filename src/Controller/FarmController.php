@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Farm;
-use App\Form\FarmType;
+use App\Handler\UpdateFarmHandler;
+use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\FarmRepository;
 use App\Repository\ProductRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -54,30 +55,23 @@ class FarmController extends AbstractController
 
     /**
      * @param Request $request
+     * @param HandlerFactoryInterface $handlerFactory
      * @return Response
      * @Route("/update", name="farm_update")
      * @IsGranted("ROLE_PRODUCER")
      */
-    public function update(Request $request): Response
+    public function update(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
-        $form = $this->createForm(
-            FarmType::class,
-            $this->getUser()->getFarm(),
-            [
-                'validation_groups' => ['Default', 'edit']
-            ]
-        )->handleRequest($request);
+        $handler = $handlerFactory->createHandler(UpdateFarmHandler::class);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('success', 'Les informations de votre exploitation ont étés modifiés avec succès');
+        if ($handler->handle($request, $this->getUser()->getFarm())) {
             return $this->redirectToRoute('farm_update');
         }
 
         return $this->render(
             'ui/farm/update.html.twig',
             [
-                'form' => $form->createView()
+                'form' => $handler->createView()
             ]
         );
     }

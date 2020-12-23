@@ -13,20 +13,13 @@ use Symfony\Component\Uid\Uuid;
 class FarmListener
 {
     private string $uploadWebDir;
+
     private string $uploadAbsoluteDir;
+
     private SluggerInterface $slugger;
-    /**
-     * @var FarmRepository
-     */
+
     private FarmRepository $farmRepository;
 
-    /**
-     * FarmListener constructor.
-     * @param SluggerInterface $slugger
-     * @param FarmRepository $farmRepository
-     * @param string $uploadWebDir
-     * @param string $uploadAbsoluteDir
-     */
     public function __construct(
         SluggerInterface $slugger,
         FarmRepository $farmRepository,
@@ -44,6 +37,7 @@ class FarmListener
         if ($args->hasChangedField('name')) {
             $this->setSlug($farm);
         }
+
         $this->upload($farm);
     }
 
@@ -68,6 +62,7 @@ class FarmListener
     private function setSlug(Farm $farm): void
     {
         $slug = $this->farmRepository->getNextSlug($this->slugger->slug($farm->getName())->lower()->toString());
+
         $farm->setSlug($slug);
     }
 }
