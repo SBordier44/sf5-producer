@@ -85,24 +85,10 @@ class Order
      */
     private Collection $lines;
 
-    /**
-     * @var Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Slot", mappedBy="order", cascade={"persist"}, orphanRemoval=true)
-     * @Assert\Count(min=1)
-     */
-    private Collection $slots;
-
-    /**
-     * @var Slot|null
-     * @ORM\OneToOne(targetEntity="App\Entity\Slot")
-     */
-    private ?Slot $chosenSlot;
-
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
         $this->lines = new ArrayCollection();
-        $this->slots = new ArrayCollection();
     }
 
     /**
@@ -256,45 +242,6 @@ class Order
     public function setSettledAt(?DateTimeImmutable $settledAt): Order
     {
         $this->settledAt = $settledAt;
-        return $this;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getSlots(): Collection
-    {
-        return $this->slots;
-    }
-
-    public function addSlot(Slot $slot): Order
-    {
-        $slot->setOrder($this);
-        $this->slots->add($slot);
-        return $this;
-    }
-
-    public function removeSlot(Slot $slot): Order
-    {
-        $this->slots->removeElement($slot);
-        return $this;
-    }
-
-    /**
-     * @return Slot|null
-     */
-    public function getChosenSlot(): ?Slot
-    {
-        return $this->chosenSlot;
-    }
-
-    /**
-     * @param Slot|null $chosenSlot
-     * @return Order
-     */
-    public function setChosenSlot(?Slot $chosenSlot): Order
-    {
-        $this->chosenSlot = $chosenSlot;
         return $this;
     }
 

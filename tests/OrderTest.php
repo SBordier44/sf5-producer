@@ -165,7 +165,7 @@ class OrderTest extends WebTestCase
             ]
         );
 
-        $crawler = $client->request(
+        $client->request(
             Request::METHOD_GET,
             $router->generate(
                 'order_accept',
@@ -176,38 +176,6 @@ class OrderTest extends WebTestCase
         );
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-
-        $form = $crawler->filter('form[name=accept_order]')->form();
-        $csrfToken = $form->get('accept_order')['_token']->getValue();
-
-        $client->request(
-            Request::METHOD_POST,
-            $router->generate(
-                'order_accept',
-                [
-                    'id' => $order->getId()
-                ]
-            ),
-            [
-                'accept_order' => [
-                    '_token' => $csrfToken,
-                    'slots' => [
-                        ['startedAt' => '2022-01-01 10:00'],
-                        ['startedAt' => '2022-01-02 11:00']
-                    ]
-                ]
-            ]
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
-
-        $entityManager->clear();
-
-        $order = $entityManager->getRepository(Order::class)->find($order->getId());
-
-        self::assertEquals('accepted', $order->getState());
-
-        self::assertCount(2, $order->getSlots());
     }
 
     public function testAccessDeniedOrderCreateForProducer(): void
