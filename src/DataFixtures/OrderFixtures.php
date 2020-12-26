@@ -8,7 +8,6 @@ use App\Entity\Customer;
 use App\Entity\Farm;
 use App\Entity\Order;
 use App\Entity\OrderLine;
-use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -25,25 +24,16 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $producer = $manager->getRepository(Producer::class)->findOneByEmail('producer@email.com');
-        $products = $manager->getRepository(Product::class)->findBy(['farm' => $producer->getFarm()], [], 0, 5);
-        $customer = $manager->getRepository(Customer::class)->findOneByEmail('customer@email.com');
-
-        $order = (new Order())
-            ->setCustomer($customer)
-            ->setFarm($producer->getFarm());
-        foreach ($products as $product) {
-            $line = (new OrderLine())
-                ->setOrder($order)
-                ->setQuantity(random_int(1, 5))
-                ->setProduct($product)
-                ->setPrice($product->getPrice());
-            $order->getLines()->add($line);
-        }
-        $order->setState('accepted');
-        $manager->persist($order);
-        $manager->flush();
-
+        $states = [
+            'created',
+            'accepted',
+            'refused',
+            'canceled',
+            'settled',
+            'processing',
+            'ready',
+            'issued'
+        ];
 
         $customers = $manager->getRepository(Customer::class)->findAll();
         $farms = $manager->getRepository(Farm::class)->findAll();
@@ -51,24 +41,27 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         /** @var Customer $customer */
         foreach ($customers as $k => $customer) {
             foreach ($farms as $farm) {
-                $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 0, 5);
+                $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 5, 0);
 
-                $order = (new Order())
-                    ->setCustomer($customer)
-                    ->setFarm($farm);
-                $manager->persist($order);
+                foreach ($states as $state) {
+                    $order = (new Order())
+                        ->setCustomer($customer)
+                        ->setFarm($farm);
 
-                foreach ($products as $product) {
-                    $line = (new OrderLine())
-                        ->setOrder($order)
-                        ->setQuantity(random_int(1, 5))
-                        ->setProduct($product)
-                        ->setPrice($product->getPrice());
-                    $order->getLines()->add($line);
+                    foreach ($products as $product) {
+                        $line = (new OrderLine())
+                            ->setOrder($order)
+                            ->setQuantity(random_int(1, 5))
+                            ->setProduct($product)
+                            ->setPrice($product->getPrice());
+                        $order->getLines()->add($line);
+                    }
+                    $order->setState($state);
+                    $manager->persist($order);
+                    $manager->flush();
                 }
             }
         }
-        $manager->flush();
     }
 
     /**

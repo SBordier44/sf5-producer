@@ -7,14 +7,11 @@ namespace App\Controller;
 use App\Entity\CartItem;
 use App\Entity\Order;
 use App\Entity\OrderLine;
-use App\Handler\AcceptOrderHandler;
-use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\OrderRepository;
 use App\Security\Voter\OrderVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -67,7 +64,7 @@ class OrderController extends AbstractController
         return $this->render(
             'ui/order/history.html.twig',
             [
-                'orders' => $orderRepository->findByCustomer($this->getUser())
+                'orders' => $orderRepository->findByCustomerOrdered($this->getUser())
             ]
         );
     }
@@ -124,30 +121,58 @@ class OrderController extends AbstractController
     public function settle(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
     {
         $orderStateMachine->apply($order, OrderVoter::SETTLE);
-        return $this->redirectToRoute('order_manage');
+        return $this->redirectToRoute('order_history');
     }
 
     /**
-     * @param Request $request
      * @param Order $order
-     * @param HandlerFactoryInterface $handlerFactory
+     * @param WorkflowInterface $orderStateMachine
      * @return RedirectResponse
      * @Route("/{id}/accept", name="order_accept")
      * @IsGranted("accept", subject="order")
      */
-    public function accept(Request $request, Order $order, HandlerFactoryInterface $handlerFactory): Response
+    public function accept(Order $order, WorkflowInterface $orderStateMachine): Response
     {
-        $handler = $handlerFactory->createHandler(AcceptOrderHandler::class);
+        $orderStateMachine->apply($order, OrderVoter::ACCEPT);
+        return $this->redirectToRoute('order_manage');
+    }
 
-        if ($handler->handle($request, $order)) {
-            return $this->redirectToRoute('order_manage');
-        }
+    /**
+     * @param Order $order
+     * @param WorkflowInterface $orderStateMachine
+     * @return RedirectResponse
+     * @Route("/{id}/process", name="order_process")
+     * @IsGranted("process", subject="order")
+     */
+    public function process(Order $order, WorkflowInterface $orderStateMachine): Response
+    {
+        $orderStateMachine->apply($order, OrderVoter::PROCESS);
+        return $this->redirectToRoute('order_manage');
+    }
 
-        return $this->render(
-            'ui/order/accept.html.twig',
-            [
-                'form' => $handler->createView()
-            ]
-        );
+    /**
+     * @param Order $order
+     * @param WorkflowInterface $orderStateMachine
+     * @return RedirectResponse
+     * @Route("/{id}/ready", name="order_ready")
+     * @IsGranted("ready", subject="order")
+     */
+    public function ready(Order $order, WorkflowInterface $orderStateMachine): Response
+    {
+        $orderStateMachine->apply($order, OrderVoter::READY);
+        return $this->redirectToRoute('order_manage');
+    }
+
+    /**
+     * @param Order $order
+     * @param WorkflowInterface $orderStateMachine
+     * @return RedirectResponse
+     * @Route("/{id}/deliver", name="order_deliver")
+     * @IsGranted("deliver", subject="order")
+     */
+    public function deliver(Order $order, WorkflowInterface $orderStateMachine): Response
+    {
+        $orderStateMachine->apply($order, OrderVoter::DELIVER);
+        return $this->redirectToRoute('order_manage');
     }
 }

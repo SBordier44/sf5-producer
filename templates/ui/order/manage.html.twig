@@ -27,16 +27,44 @@
                                 <td class="text-center">{{ order.numberOfProducts }}</td>
                                 <td class="text-center">{{ order.totalIncludingTaxes|format_currency('EUR') }}</td>
                                 <td class="text-center">
-
+                                    {% if order.state == 'created' %}
+                                        <span class="badge badge-light">En attente</span>
+                                    {% elseif order.state == 'accepted' %}
+                                        <span class="badge badge-warning">Acceptée - Réglement en attente</span>
+                                    {% elseif order.state == 'settled' %}
+                                        <span class="badge badge-primary">Réglée</span>
+                                    {% elseif order.state == 'processing' %}
+                                        <span class="badge badge-secondary">En cours de préparation</span>
+                                    {% elseif order.state == 'ready' %}
+                                        <span class="badge badge-info">Prête</span>
+                                    {% elseif order.state == 'issued' %}
+                                        <span class="badge badge-success">Délivrée</span>
+                                    {% elseif order.state == 'canceled' %}
+                                        <span class="badge badge-dark">Annulée</span>
+                                    {% elseif order.state == 'refused' %}
+                                        <span class="badge badge-danger">Refusée</span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    {% if is_granted('refuse', order) and workflow_can(order, 'refuse') %}
-                                        <a href="{{ path('order_refuse', {id: order.id}) }}"
-                                           class="btn btn-outline-warning">Refuser</a>
-                                    {% endif %}
                                     {% if is_granted('accept', order) and workflow_can(order, 'accept') %}
                                         <a href="{{ path('order_accept', {id: order.id}) }}"
-                                           class="btn btn-outline-success">Accepter</a>
+                                           class="btn btn-outline-success btn-sm">Accepter</a>
+                                    {% endif %}
+                                    {% if is_granted('refuse', order) and workflow_can(order, 'refuse') %}
+                                        <a href="{{ path('order_refuse', {id: order.id}) }}"
+                                           class="btn btn-outline-danger btn-sm">Refuser</a>
+                                    {% endif %}
+                                    {% if is_granted('process', order) and workflow_can(order, 'process') %}
+                                        <a href="{{ path('order_process', {id: order.id}) }}"
+                                           class="btn btn-outline-primary btn-sm">Mettre en préparation</a>
+                                    {% endif %}
+                                    {% if is_granted('ready', order) and workflow_can(order, 'ready') %}
+                                        <a href="{{ path('order_ready', {id: order.id}) }}"
+                                           class="btn btn-outline-info btn-sm">Prête</a>
+                                    {% endif %}
+                                    {% if is_granted('deliver', order) and workflow_can(order, 'deliver') %}
+                                        <a href="{{ path('order_deliver', {id: order.id}) }}"
+                                           class="btn btn-outline-dark btn-sm">Délivrée</a>
                                     {% endif %}
                                 </td>
                             </tr>

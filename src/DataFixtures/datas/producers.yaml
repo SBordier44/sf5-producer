@@ -1,0 +1,70 @@
+producers:
+  - name: 'Manger Bio 44'
+    address: '58 Boulevard Gustave Roch'
+    city: 'Nantes'
+    postalCode: '44200'
+    country: 'France'
+    lat: 47.19874794450828
+    lng: -1.5530324573306642
+    phone: '0982486519'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'Au fil des saisons'
+    address: '7 ter rue Saint-Julien'
+    city: 'Bouvron'
+    postalCode: '44130'
+    country: 'France'
+    lat: 47.41754397282512
+    lng: -1.8472411726672717
+    phone: '0240544489'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'La chaumière des saveurs et de l''artisanat'
+    address: '18 Kerhinet'
+    city: 'Saint-Lyphard'
+    postalCode: '44410'
+    country: 'France'
+    lat: 47.36492759319492
+    lng: -2.349020346027567
+    phone: '0240619553'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'Graines de Bio'
+    address: '5 Place du Champ de foire'
+    city: 'Nort-sur-Erdre'
+    postalCode: '44390'
+    country: 'France'
+    lat: 47.436969047317085
+    lng: -1.500588872666757
+    phone: '0251819072'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'Le Wagon'
+    address: 'Les Hauts Roseaux'
+    city: 'Pannecé'
+    postalCode: '44440'
+    country: 'France'
+    lat: 47.467990539136146
+    lng: -1.2253027303371875
+    phone: '0240977852'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'La Ferme de Chez Nous'
+    address: '2 Route de la Vendée'
+    city: 'Mouzillon'
+    postalCode: '44330'
+    country: 'France'
+    lat: 47.13970893931923
+    lng: -1.2817406591816431
+    phone: '0228024944'
+    region: 'Loire-Atlantique, Pays de la Loire'
+
+  - name: 'Les Fermiers du Coin'
+    address: '290 route de Vannes'
+    city: 'Orvault'
+    postalCode: '44700'
+    country: 'France'
+    lat: 47.25086826238829
+    lng: -1.6166029150005088
+    phone: '0240592641'
+    region: 'Loire-Atlantique, Pays de la Loire'

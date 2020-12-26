@@ -18,6 +18,9 @@ class OrderVoter extends Voter
     public const REFUSE = 'refuse';
     public const SETTLE = 'settle';
     public const ACCEPT = 'accept';
+    public const PROCESS = 'process';
+    public const READY = 'ready';
+    public const DELIVER = 'deliver';
 
     private WorkflowInterface $orderStateMachine;
 
@@ -29,7 +32,18 @@ class OrderVoter extends Voter
     protected function supports(string $attribute, $subject): bool
     {
         return $subject instanceof Order
-            && in_array($attribute, [self::CANCEL, self::REFUSE, self::SETTLE, self::ACCEPT]);
+            && in_array(
+                $attribute,
+                [
+                    self::CANCEL,
+                    self::REFUSE,
+                    self::SETTLE,
+                    self::ACCEPT,
+                    self::PROCESS,
+                    self::READY,
+                    self::DELIVER
+                ]
+            );
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
@@ -48,17 +62,33 @@ class OrderVoter extends Voter
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::REFUSE);
 
-            case self::SETTLE:
-                return $user instanceof Producer
-                    && $user->getFarm() === $subject->getFarm()
-                    && $this->orderStateMachine->can($subject, self::SETTLE);
-
             case self::ACCEPT:
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::ACCEPT);
+
+            case self::PROCESS:
+                return $user instanceof Producer
+                    && $user->getFarm() === $subject->getFarm()
+                    && $this->orderStateMachine->can($subject, self::PROCESS);
+
+            case self::READY:
+                return $user instanceof Producer
+                    && $user->getFarm() === $subject->getFarm()
+                    && $this->orderStateMachine->can($subject, self::READY);
+
+            case self::DELIVER:
+                return $user instanceof Producer
+                    && $user->getFarm() === $subject->getFarm()
+                    && $this->orderStateMachine->can($subject, self::DELIVER);
+
+            case self::SETTLE:
+                return $user instanceof Customer
+                    && $user === $subject->getCustomer()
+                    && $this->orderStateMachine->can($subject, self::SETTLE);
         }
 
+        /** @codeCoverageIgnore */
         throw new AccessDeniedException("Vous n'avez pas accès à cette ressource.");
     }
 }
