@@ -8,6 +8,7 @@ use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -473,5 +474,19 @@ class ProductTest extends WebTestCase
         $path = __DIR__ . '/../public/uploads/';
         copy($path . 'TF300.png', $path . $filename);
         return new UploadedFile($path . $filename, $filename, 'image/png', null, true);
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $finder = new Finder();
+        $finder->files()->in(__DIR__ . '/../public/uploads');
+        if ($finder->hasResults()) {
+            foreach ($finder->files() as $file) {
+                $filename = $file->getFilename();
+                if ($filename !== 'TF300.png' && $filename !== '.gitignore') {
+                    unlink($file->getPath() . '/' . $filename);
+                }
+            }
+        }
     }
 }

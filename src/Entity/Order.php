@@ -10,13 +10,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Order
  * @package App\Entity
  * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
  * @ORM\Table(name="orders")
+ * @ORM\EntityListeners({"App\EntityListener\OrderListener"})
  */
 class Order
 {
@@ -28,6 +28,12 @@ class Order
      * @ORM\Column(type="uuid")
      */
     private UuidInterface $id;
+
+    /**
+     * @var int|null
+     * @ORM\Column(type="bigint", nullable=false, unique=true)
+     */
+    private ?int $orderReference = null;
 
     /**
      * @var string
@@ -66,6 +72,24 @@ class Order
     private ?DateTimeImmutable $acceptedAt = null;
 
     /**
+     * @var DateTimeImmutable|null
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?DateTimeImmutable $processingStartedAt = null;
+
+    /**
+     * @var DateTimeImmutable|null
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?DateTimeImmutable $processingCompletedAt = null;
+
+    /**
+     * @var DateTimeImmutable|null
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?DateTimeImmutable $issuedAt = null;
+
+    /**
      * @var Customer
      * @ORM\ManyToOne(targetEntity="App\Entity\Customer")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -97,6 +121,24 @@ class Order
     public function getId(): UuidInterface
     {
         return $this->id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOrderReference(): ?int
+    {
+        return $this->orderReference;
+    }
+
+    /**
+     * @param int|null $orderReference
+     * @return Order
+     */
+    public function setOrderReference(?int $orderReference): Order
+    {
+        $this->orderReference = $orderReference;
+        return $this;
     }
 
     /**
@@ -260,6 +302,60 @@ class Order
     public function setAcceptedAt(?DateTimeImmutable $acceptedAt): Order
     {
         $this->acceptedAt = $acceptedAt;
+        return $this;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getProcessingStartedAt(): ?DateTimeImmutable
+    {
+        return $this->processingStartedAt;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $processingStartedAt
+     * @return Order
+     */
+    public function setProcessingStartedAt(?DateTimeImmutable $processingStartedAt): Order
+    {
+        $this->processingStartedAt = $processingStartedAt;
+        return $this;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getProcessingCompletedAt(): ?DateTimeImmutable
+    {
+        return $this->processingCompletedAt;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $processingCompletedAt
+     * @return Order
+     */
+    public function setProcessingCompletedAt(?DateTimeImmutable $processingCompletedAt): Order
+    {
+        $this->processingCompletedAt = $processingCompletedAt;
+        return $this;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getIssuedAt(): ?DateTimeImmutable
+    {
+        return $this->issuedAt;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $issuedAt
+     * @return Order
+     */
+    public function setIssuedAt(?DateTimeImmutable $issuedAt): Order
+    {
+        $this->issuedAt = $issuedAt;
         return $this;
     }
 }

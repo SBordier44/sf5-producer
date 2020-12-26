@@ -16,9 +16,12 @@ framework:
         - accepted
         - settled
         - canceled
+        - processing
+        - ready
+        - issued
       transitions:
         cancel:
-          from: created
+          from: [ created, accepted ]
           to: canceled
         refuse:
           from: created
@@ -29,3 +32,12 @@ framework:
         settle:
           from: accepted
           to: settled
+        process:
+          from: settled
+          to: processing
+        ready:
+          from: processing
+          to: ready
+        deliver:
+          from: ready
+          to: issued
