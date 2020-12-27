@@ -5,7 +5,6 @@ namespace App\Tests;
 use App\Entity\Farm;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,6 +105,8 @@ class FarmTest extends WebTestCase
             $router->generate('farm_update')
         );
 
+        $image = $this->createImage();
+
         $form = $crawler->filter('form[name=farm]')->form(
             [
                 'farm[name]' => 'NextGenExploit Modified',
@@ -119,13 +120,15 @@ class FarmTest extends WebTestCase
                 'farm[address][phone]' => '0607080910',
                 'farm[address][position][latitude]' => '48.441049',
                 'farm[address][position][longitude]' => '1.546233',
-                'farm[image][file]' => $this->createImage()
+                'farm[image][file]' => $image
             ]
         );
 
         $client->submit($form);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        unlink(__DIR__ . '/../public/uploads/' . $image->getFilename());
     }
 
     public function testFailedGetFarmInfoIfUserIsNotLogged(): void
@@ -337,19 +340,5 @@ class FarmTest extends WebTestCase
         $path = __DIR__ . '/../public/uploads/';
         copy($path . 'TF300.png', $path . $filename);
         return new UploadedFile($path . $filename, $filename, 'image/png', null, true);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        $finder = new Finder();
-        $finder->files()->in(__DIR__ . '/../public/uploads');
-        if ($finder->hasResults()) {
-            foreach ($finder->files() as $file) {
-                $filename = $file->getFilename();
-                if ($filename !== 'TF300.png' && $filename !== '.gitignore') {
-                    unlink($file->getPath() . '/' . $filename);
-                }
-            }
-        }
     }
 }

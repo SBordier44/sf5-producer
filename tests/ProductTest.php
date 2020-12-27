@@ -8,7 +8,6 @@ use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,19 +58,23 @@ class ProductTest extends WebTestCase
             $router->generate('product_update', ['id' => $product->getId()])
         );
 
+        $image = $this->createImage();
+
         $form = $crawler->filter('form[name=product]')->form(
             [
                 'product[name]' => 'Produit laitier',
                 'product[description]' => 'Super Produit de ma ferme biologique',
                 'product[price][unitPrice]' => 100,
                 'product[price][vat]' => 2.1,
-                'product[image][file]' => $this->createImage()
+                'product[image][file]' => $image
             ]
         );
 
         $client->submit($form);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        unlink(__DIR__ . '/../public/uploads/' . $image->getFilename());
     }
 
     /**
@@ -125,19 +128,23 @@ class ProductTest extends WebTestCase
             $router->generate('product_create')
         );
 
+        $image = $this->createImage();
+
         $form = $crawler->filter('form[name=product]')->form(
             [
                 'product[name]' => 'Produit laitier',
                 'product[description]' => 'Super Produit de ma ferme biologique',
                 'product[price][unitPrice]' => 100,
                 'product[price][vat]' => 2.1,
-                'product[image][file]' => $this->createImage()
+                'product[image][file]' => $image
             ]
         );
 
         $client->submit($form);
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        unlink(__DIR__ . '/../public/uploads/' . $image->getFilename());
     }
 
     /**
@@ -494,19 +501,5 @@ class ProductTest extends WebTestCase
         $path = __DIR__ . '/../public/uploads/';
         copy($path . 'TF300.png', $path . $filename);
         return new UploadedFile($path . $filename, $filename, 'image/png', null, true);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        $finder = new Finder();
-        $finder->files()->in(__DIR__ . '/../public/uploads');
-        if ($finder->hasResults()) {
-            foreach ($finder->files() as $file) {
-                $filename = $file->getFilename();
-                if ($filename !== 'TF300.png' && $filename !== '.gitignore') {
-                    unlink($file->getPath() . '/' . $filename);
-                }
-            }
-        }
     }
 }
