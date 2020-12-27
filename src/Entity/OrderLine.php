@@ -133,6 +133,8 @@ class OrderLine
 
     public function getTotalIncludingTaxes(): float
     {
-        return (($this->price->getUnitPrice() * $this->price->getVat()) / 100) * $this->quantity;
+        $unitPrice = $this->price->getUnitPrice() / 100;
+        $vat = $unitPrice * $this->price->getVat() / 100;
+        return $unitPrice + $vat * $this->quantity;
     }
 }

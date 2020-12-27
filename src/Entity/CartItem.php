@@ -118,4 +118,14 @@ class CartItem
     {
         return $this->product->getPriceIncludingTaxes() * $this->quantity;
     }
+
+    public function getTotalAmountTaxes(): float
+    {
+        return $this->product->getTaxesAmount() * $this->quantity;
+    }
+
+    public function getTotalAmountWithoutTaxes(): float
+    {
+        return ($this->product->getPrice()->getUnitPrice() / 100) * $this->quantity;
+    }
 }

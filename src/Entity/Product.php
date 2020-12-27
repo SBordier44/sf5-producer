@@ -162,7 +162,15 @@ class Product
 
     public function getPriceIncludingTaxes(): float
     {
-        return ($this->price->getUnitPrice() * $this->price->getVat()) / 100;
+        $unitPrice = $this->price->getUnitPrice() / 100;
+        $vat = $unitPrice * $this->price->getVat() / 100;
+        return $unitPrice + $vat;
+    }
+
+    public function getTaxesAmount(): float
+    {
+        $unitPrice = $this->price->getUnitPrice() / 100;
+        return $unitPrice * $this->price->getVat() / 100;
     }
 
     /**
