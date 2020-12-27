@@ -41,6 +41,7 @@ class FarmController extends AbstractController
      * @param ProductRepository $productRepository
      * @return Response
      * @Route("/{slug}/show", name="farm_show")
+     * @IsGranted("ROLE_USER")
      */
     public function show(Farm $farm, ProductRepository $productRepository): Response
     {

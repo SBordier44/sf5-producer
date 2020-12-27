@@ -60,4 +60,16 @@ class Customer extends User
     {
         return array_sum($this->cart->map(fn(CartItem $cartItem) => $cartItem->getPriceIncludingTaxes())->toArray());
     }
+
+    public function getTotalCartVat(): float
+    {
+        return array_sum($this->cart->map(fn(CartItem $cartItem) => $cartItem->getTotalAmountTaxes())->toArray());
+    }
+
+    public function getTotalCartWithoutTaxes(): float
+    {
+        return array_sum(
+            $this->cart->map(fn(CartItem $cartItem) => $cartItem->getTotalAmountWithoutTaxes())->toArray()
+        );
+    }
 }

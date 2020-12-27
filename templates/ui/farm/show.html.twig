@@ -1,26 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Exploitation{% endblock %}
+{% block title %}{{ farm.name }}{{ site_name }}{% endblock %}
 
 {% block body %}
+    {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
+        <div class="alert alert-warning">
+            Vous avez commande en cours dans votre panier pour un autre producteur ({{ farm.name }}). <br>
+            Si vous souhaitez commander des produits chez ce producteur, veuillez terminer la commande en cours ou vider
+            votre panier.
+        </div>
+    {% endif %}
     <div class="row">
         {% for product in products %}
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-                <div class="card">
-                    <div class="card-header">{{ product.name }}</div>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-4">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center">
+                        <img src="{{ asset(product.image.path) }}"
+                             alt="{{ product.name }}"
+                             style="max-height: 220px; max-width: 220px">
+                    </div>
                     <div class="card-body">
                         <span>Prix : <strong>{{ product.priceIncludingTaxes|format_currency('EUR') }}</strong></span>
                         <p class="mt-4">
                             {{ product.description|nl2br }}
                         </p>
                     </div>
-                    {% if is_granted('add_to_cart', product) %}
-                        <div class="card-footer">
-                            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-primary btn-block">
+                    <div class="card-footer">
+                        {% if is_granted('add_to_cart', product) %}
+                            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-primary btn-sm btn-block">
                                 Ajouter au panier
                             </a>
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary btn-block btn-sm disabled" disabled>
+                                Ajouter au panier
+                            </button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% endfor %}

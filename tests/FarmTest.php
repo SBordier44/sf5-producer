@@ -28,7 +28,7 @@ class FarmTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testSuccessfullFarmAllIfNotConnectedUser(): void
+    public function testFailedFarmAllIfNotConnectedUser(): void
     {
         $client = static::createClient();
 
@@ -85,7 +85,13 @@ class FarmTest extends WebTestCase
             )
         );
 
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertRouteSame('security_login');
     }
 
     public function testSuccessfullUpdatedFarmInfoForProducer(): void
