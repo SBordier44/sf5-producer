@@ -34,7 +34,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $price->setUnitPrice(random_int(100, 1000));
                 $price->setVat(2.1);
                 $product->setPrice($price);
-                $product->setQuantity(random_int(0, 20));
+                $product->setQuantity(random_int(1, 20));
                 $image = new Image();
                 $image->setFile($this->createImage());
                 $product->setImage($image);

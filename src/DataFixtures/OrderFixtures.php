@@ -41,7 +41,14 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         /** @var Customer $customer */
         foreach ($customers as $k => $customer) {
             foreach ($farms as $farm) {
-                $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 5, 0);
+                $products = $manager->getRepository(Product::class)->findBy(
+                    [
+                        "farm" => $farm->getId()
+                    ],
+                    [],
+                    5,
+                    0
+                );
 
                 foreach ($states as $state) {
                     $order = (new Order())
