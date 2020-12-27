@@ -18,7 +18,8 @@ class CartType extends AbstractType
             'cart',
             CollectionType::class,
             [
-                'entry_type' => CartItemType::class
+                'entry_type' => CartItemType::class,
+                'label' => false
             ]
         );
     }

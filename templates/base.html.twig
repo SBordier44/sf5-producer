@@ -78,6 +78,7 @@
     </nav>
 </header>
 <div class="container">
+    {% include('ui/flashes.html.twig') %}
     {% block body %}{% endblock %}
 </div>
 {% block javascripts %}

@@ -30,9 +30,16 @@ class CartController extends AbstractController
      */
     public function add(Product $product): RedirectResponse
     {
-        $this->getUser()->addToCart($product);
-        $this->getDoctrine()->getManager()->flush();
-        $this->addFlash('success', 'Le produit a bien été ajouté à votre panier');
+        if ($product->getQuantity() === 0) {
+            $this->addFlash(
+                'warning',
+                'Le produit sélectionné n\'est plus en stock et ne peut donc pas être ajouté à votre panier'
+            );
+        } else {
+            $this->getUser()->addToCart($product);
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Le produit a bien été ajouté à votre panier');
+        }
         return $this->redirectToRoute(
             'farm_show',
             [

@@ -25,7 +25,7 @@ class OrderTest extends WebTestCase
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -352,7 +352,7 @@ class OrderTest extends WebTestCase
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -376,7 +376,7 @@ class OrderTest extends WebTestCase
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -499,5 +499,87 @@ class OrderTest extends WebTestCase
         );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testFailedCreateOrderIfHasProductOutOfStock(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $product->setQuantity(0);
+
+        $entityManager->flush();
+
+        $client->request(Request::METHOD_GET, $router->generate('order_create'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->followRedirect();
+
+        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
+    }
+
+    public function testFailedCreateOrderIfRequestedQuantityOfProductIsGreeterThanProductStock(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        $form = $crawler->filter('form[name=cart]')->form(
+            [
+                'cart[cart][0][quantity]' => 20
+            ]
+        );
+
+        $client->submit($form);
+
+        $product->setQuantity(10);
+
+        $entityManager->flush();
+
+        $client->request(Request::METHOD_GET, $router->generate('order_create'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->followRedirect();
+
+        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
     }
 }

@@ -30,6 +30,28 @@ class OrderController extends AbstractController
      */
     public function create(): RedirectResponse
     {
+        foreach ($this->getUser()->getCart() as $cartItem) {
+            /** @var CartItem $cartItem */
+            if ($cartItem->getProduct()->getQuantity() === 0) {
+                $this->addFlash(
+                    'warning',
+                    "Le produit <strong>{$cartItem->getProduct()->getName()}</strong> dans votre panier 
+                    n'est actuellement plus en stock. 
+                    Veuillez le retirer afin de pouvoir continuer votre commande."
+                );
+                return $this->redirectToRoute('cart_index');
+            }
+
+            if ($cartItem->getProduct()->getQuantity() < $cartItem->getQuantity()) {
+                $this->addFlash(
+                    'warning',
+                    "Le produit <strong>{$cartItem->getProduct()->getName()}</strong> a 
+                    une quantité limitée à <strong>{$cartItem->getProduct()->getQuantity()}</strong>. 
+                    Veuillez modifier la quantité désirée afin de continuer la commande."
+                );
+                return $this->redirectToRoute('cart_index');
+            }
+        }
         $order = (new Order())
             ->setCustomer($this->getUser())
             ->setFarm($this->getUser()->getCart()->first()->getProduct()->getFarm());

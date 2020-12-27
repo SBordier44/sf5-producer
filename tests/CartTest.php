@@ -24,7 +24,7 @@ class CartTest extends WebTestCase
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -65,7 +65,8 @@ class CartTest extends WebTestCase
         $router = $client->getContainer()->get('router');
 
         $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -122,7 +123,7 @@ class CartTest extends WebTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $product = $entityManager->getRepository(Product::class)->getOne();
 
         $client->request(
             Request::METHOD_GET,
@@ -140,7 +141,11 @@ class CartTest extends WebTestCase
 
         $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
 
-        $product = $entityManager->getRepository(Product::class)->findOneByFarm($farm);
+        $product = $entityManager->getRepository(Product::class)->getOneBy(
+            [
+                'farm' => $farm->getId()
+            ]
+        );
 
         $client->request(
             Request::METHOD_GET,
@@ -153,5 +158,96 @@ class CartTest extends WebTestCase
         );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testFailedAddStockOutProductToCart(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        /** @var Product $product */
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $product->setQuantity(0);
+
+        $entityManager->flush();
+
+        $entityManager->refresh($product);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(0, $crawler->filter('tbody > tr')->count());
+
+        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
+    }
+
+    public function testFailureIfTheRequestedQuantityOfProductIsGreeterThanQuantityInStock(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $product->setQuantity(5);
+
+        $entityManager->flush();
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(1, $crawler->filter('tbody > tr')->count());
+
+        $form = $crawler->filter('form[name=cart]')->form(
+            [
+                'cart[cart][0][quantity]' => 10
+            ]
+        );
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->followRedirect();
+
+        self::assertEquals(1, $crawler->filter('tbody > tr')->count());
+
+        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
+
+        $cart = $crawler
+            ->filter('input[id=cart_cart_0_quantity]')
+            ->attr('value');
+
+        self::assertEquals(1, $cart);
     }
 }
