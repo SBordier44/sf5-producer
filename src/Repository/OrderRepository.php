@@ -40,4 +40,14 @@ class OrderRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()[0]['orderReference'];
     }
+
+    public function getLastOrderForCustomer(Customer $customer): ?Order
+    {
+        return $this->createQueryBuilder('o')
+            ->where("o.customer = '{$customer->getId()}'")
+            ->orderBy('o.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
