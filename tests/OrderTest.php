@@ -557,6 +557,8 @@ class OrderTest extends WebTestCase
 
         $product->setQuantity(0);
 
+        $entityManager->persist($product);
+
         $entityManager->flush();
 
         $client->request(Request::METHOD_GET, $router->generate('order_create'));
