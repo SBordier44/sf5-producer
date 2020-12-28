@@ -7,7 +7,9 @@ namespace App\Controller;
 use App\Entity\CartItem;
 use App\Entity\Order;
 use App\Entity\OrderLine;
+use App\Entity\Product;
 use App\Repository\OrderRepository;
+use App\Repository\ProductRepository;
 use App\Security\Voter\OrderVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,6 +67,9 @@ class OrderController extends AbstractController
                 ->setPrice($cartItem->getProduct()->getPrice());
 
             $order->getLines()->add($line);
+            $product = $this->getDoctrine()->getRepository(Product::class)->find($cartItem->getProduct()->getId());
+            $product->setQuantity($product->getQuantity() - $cartItem->getQuantity());
+            $this->getDoctrine()->getManager()->persist($product);
         }
 
         $this->getUser()->getCart()->clear();
@@ -110,26 +115,52 @@ class OrderController extends AbstractController
     /**
      * @param Order $order
      * @param WorkflowInterface $orderStateMachine
+     * @param ProductRepository $productRepository
      * @return RedirectResponse
      * @Route("/{id}/cancel", name="order_cancel")
      * @IsGranted("cancel", subject="order")
      */
-    public function cancel(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
-    {
+    public function cancel(
+        Order $order,
+        WorkflowInterface $orderStateMachine,
+        ProductRepository $productRepository
+    ): RedirectResponse {
         $orderStateMachine->apply($order, OrderVoter::CANCEL);
+        foreach ($order->getLines() as $line) {
+            /** @var OrderLine $line */
+            $product = $productRepository->find($line->getProduct()->getId());
+            if ($product) {
+                $product->setQuantity($product->getQuantity() + $line->getQuantity());
+                $this->getDoctrine()->getManager()->persist($product);
+            }
+        }
+        $this->getDoctrine()->getManager()->flush();
         return $this->redirectToRoute('order_history');
     }
 
     /**
      * @param Order $order
      * @param WorkflowInterface $orderStateMachine
+     * @param ProductRepository $productRepository
      * @return RedirectResponse
      * @Route("/{id}/refuse", name="order_refuse")
      * @IsGranted("refuse", subject="order")
      */
-    public function refuse(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
-    {
+    public function refuse(
+        Order $order,
+        WorkflowInterface $orderStateMachine,
+        ProductRepository $productRepository
+    ): RedirectResponse {
         $orderStateMachine->apply($order, OrderVoter::REFUSE);
+        foreach ($order->getLines() as $line) {
+            /** @var OrderLine $line */
+            $product = $productRepository->find($line->getProduct()->getId());
+            if ($product) {
+                $product->setQuantity($product->getQuantity() + $line->getQuantity());
+                $this->getDoctrine()->getManager()->persist($product);
+            }
+        }
+        $this->getDoctrine()->getManager()->flush();
         return $this->redirectToRoute('order_manage');
     }
 

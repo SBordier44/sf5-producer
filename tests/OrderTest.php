@@ -48,11 +48,13 @@ class OrderTest extends WebTestCase
         $customer = $entityManager->getRepository(Customer::class)->findOneByEmail('customer@email.com');
 
         /** @var Order $order */
-        $order = $entityManager->getRepository(Order::class)->findOneBy(
-            [
-                'state' => 'created',
-                'customer' => $customer
-            ]
+        $order = $entityManager->getRepository(Order::class)->getLastOrderForCustomer($customer);
+
+        $productNewStock = $entityManager->getRepository(Product::class)->find($product->getId());
+
+        self::assertEquals(
+            $product->getQuantity() - $order->getLines()->first()->getQuantity(),
+            $productNewStock->getQuantity()
         );
 
         $client->request(
@@ -72,6 +74,13 @@ class OrderTest extends WebTestCase
         $order = $entityManager->getRepository(Order::class)->find($order->getId());
 
         self::assertEquals('canceled', $order->getState());
+
+        $product = $entityManager->getRepository(Product::class)->find($product->getId());
+
+        self::assertEquals(
+            $productNewStock->getQuantity() + $order->getLines()->first()->getQuantity(),
+            $product->getQuantity()
+        );
     }
 
     public function testSuccessfullCancelOrderInAcceptedStatus(): void
@@ -92,6 +101,8 @@ class OrderTest extends WebTestCase
             ]
         );
 
+        $productOldStock = $order->getLines()->first()->getProduct()->getQuantity();
+
         $client->request(
             Request::METHOD_GET,
             $router->generate(
@@ -109,6 +120,15 @@ class OrderTest extends WebTestCase
         $order = $entityManager->getRepository(Order::class)->find($order->getId());
 
         self::assertEquals('canceled', $order->getState());
+
+        $productNewStock = $entityManager->getRepository(Product::class)->find(
+            $order->getLines()->first()->getProduct()->getId()
+        );
+
+        self::assertEquals(
+            $productNewStock->getQuantity(),
+            $productOldStock + $order->getLines()->first()->getQuantity()
+        );
     }
 
     public function testSuccessfullRefuseOrder(): void
@@ -134,6 +154,8 @@ class OrderTest extends WebTestCase
             ]
         );
 
+        $productOldStock = $order->getLines()->first()->getProduct()->getQuantity();
+
         $client->request(
             Request::METHOD_GET,
             $router->generate(
@@ -151,6 +173,15 @@ class OrderTest extends WebTestCase
         $order = $entityManager->getRepository(Order::class)->find($order->getId());
 
         self::assertEquals('refused', $order->getState());
+
+        $productNewStock = $entityManager->getRepository(Product::class)->find(
+            $order->getLines()->first()->getProduct()->getId()
+        );
+
+        self::assertEquals(
+            $productNewStock->getQuantity(),
+            $productOldStock + $order->getLines()->first()->getQuantity()
+        );
     }
 
     public function testSuccessfullAcceptOrder(): void
