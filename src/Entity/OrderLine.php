@@ -137,4 +137,16 @@ class OrderLine
         $vat = $unitPrice * $this->price->getVat() / 100;
         return $unitPrice + $vat * $this->quantity;
     }
+
+    public function getTotal(): float
+    {
+        $unitPrice = $this->price->getUnitPrice() / 100;
+        return $unitPrice * $this->quantity;
+    }
+
+    public function getTaxesAmount(): float
+    {
+        $unitPrice = $this->price->getUnitPrice() / 100;
+        return $unitPrice * $this->price->getVat() / 100;
+    }
 }
