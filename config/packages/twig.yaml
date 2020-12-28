@@ -5,3 +5,5 @@ twig:
     globals:
         google_map_api_key: '%env(GOOGLE_MAP_API_KEY)%'
         site_name: ' - Producteur au Consommateur'
+    paths:
+        '%kernel.project_dir%/vendor/knplabs/knp-paginator-bundle/templates': KnpPaginator

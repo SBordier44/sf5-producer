@@ -11,9 +11,11 @@ use App\Entity\Product;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Security\Voter\OrderVoter;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -81,33 +83,59 @@ class OrderController extends AbstractController
     }
 
     /**
+     * @param Request $request
      * @param OrderRepository $orderRepository
+     * @param PaginatorInterface $paginator
      * @return Response
      * @Route("/history", name="order_history")
      * @IsGranted("ROLE_CUSTOMER")
      */
-    public function history(OrderRepository $orderRepository): Response
+    public function history(Request $request, OrderRepository $orderRepository, PaginatorInterface $paginator): Response
     {
+        $orders = $paginator->paginate(
+            $orderRepository->findByCustomerOrdered($this->getUser()),
+            $request->query->getInt('page', 1)
+        );
+        $orders->setCustomParameters(
+            [
+                'align' => 'center',
+                'size' => 'small',
+                'rounded' => true
+            ]
+        );
         return $this->render(
             'ui/order/history.html.twig',
             [
-                'orders' => $orderRepository->findByCustomerOrdered($this->getUser())
+                'orders' => $orders
             ]
         );
     }
 
     /**
+     * @param Request $request
      * @param OrderRepository $orderRepository
+     * @param PaginatorInterface $paginator
      * @return Response
      * @Route("/manage", name="order_manage")
      * @IsGranted("ROLE_PRODUCER")
      */
-    public function manage(OrderRepository $orderRepository): Response
+    public function manage(Request $request, OrderRepository $orderRepository, PaginatorInterface $paginator): Response
     {
+        $orders = $paginator->paginate(
+            $orderRepository->findByFarm($this->getUser()->getFarm()),
+            $request->query->getInt('page', 1)
+        );
+        $orders->setCustomParameters(
+            [
+                'align' => 'center',
+                'size' => 'small',
+                'rounded' => true
+            ]
+        );
         return $this->render(
             'ui/order/manage.html.twig',
             [
-                'orders' => $orderRepository->findByFarm($this->getUser()->getFarm())
+                'orders' => $orders
             ]
         );
     }
@@ -227,5 +255,21 @@ class OrderController extends AbstractController
     {
         $orderStateMachine->apply($order, OrderVoter::DELIVER);
         return $this->redirectToRoute('order_manage');
+    }
+
+    /**
+     * @param Order $order
+     * @return Response
+     * @Route("/{orderReference}/details", name="order_show")
+     * @IsGranted("ROLE_USER")
+     */
+    public function show(Order $order): Response
+    {
+        return $this->render(
+            'ui/order/show.html.twig',
+            [
+                'order' => $order
+            ]
+        );
     }
 }

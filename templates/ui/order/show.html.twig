@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de la commande {{ order.orderReference }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">Détail de la commande {{ order.orderReference }}</h1>
+                </div>
+                <div class="card-body">
+                    <table class="mt-4 table table-striped mb-0 table-sm">
+                        <thead>
+                        <tr class="table-secondary">
+                            <th class="text-center"></th>
+                            <th class="text-center">Nom</th>
+                            <th class="text-center">Prix unitaire HT</th>
+                            <th class="text-center">TVA</th>
+                            <th class="text-center">Quantité</th>
+                            <th class="text-center">Prix total TTC</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in order.lines %}
+                            <tr>
+                                <td class="text-center align-middle">
+                                    <img src="{{ asset(item.product.image.path) }}"
+                                         alt="{{ item.product.name }}"
+                                         style="max-height: 40px; max-width: 40px">
+                                </td>
+                                <td class="text-center align-middle">{{ item.product.name }}</td>
+                                <td class="text-center align-middle">{{ (item.product.price.unitPrice / 100)|format_currency('EUR') }}</td>
+                                <td class="text-center align-middle">{{ (item.product.price.vat) }}%</td>
+                                <td class="text-center align-middle">{{ item.quantity }}</td>
+                                <td class="text-center align-middle">{{ item.totalIncludingTaxes|format_currency('EUR') }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td class="text-right align-middle" colspan="5">Total HT</td>
+                            <td class="text-center align-middle">{{ order.totalWithoutTaxes|format_currency('EUR') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right align-middle" colspan="5">Total TVA</td>
+                            <td class="text-center align-middle">{{ order.totalTaxes|format_currency('EUR') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right font-weight-bold align-middle" colspan="5">Total TTC</td>
+                            <td class="text-center font-weight-bold align-middle">{{ order.totalIncludingTaxes|format_currency('EUR') }}</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="javascript: window.history.back()"
+                       class="btn btn-sm btn-outline-info float-right">Retour</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

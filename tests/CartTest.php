@@ -137,7 +137,7 @@ class CartTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer1@email.com");
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
 
         $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
 

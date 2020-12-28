@@ -613,4 +613,64 @@ class OrderTest extends WebTestCase
 
         self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
     }
+
+    public function testSuccessfullOrderDetailsForCustomer(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $customer = $entityManager->getRepository(Customer::class)->findOneByEmail('customer@email.com');
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy(
+            [
+                'customer' => $customer->getId()
+            ]
+        );
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'order_show',
+                [
+                    'orderReference' => $order->getOrderReference()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testSuccessfullOrderDetailsForProducer(): void
+    {
+        $client = static::createAuthenticatedClient('producer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail('producer@email.com');
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy(
+            [
+                'farm' => $producer->getFarm()->getId()
+            ]
+        );
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'order_show',
+                [
+                    'orderReference' => $order->getOrderReference()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
 }

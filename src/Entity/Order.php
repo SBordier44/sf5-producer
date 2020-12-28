@@ -233,6 +233,20 @@ class Order
         );
     }
 
+    public function getTotalWithoutTaxes(): float
+    {
+        return array_sum(
+            $this->lines->map(fn(OrderLine $orderLine) => $orderLine->getTotal())->toArray()
+        );
+    }
+
+    public function getTotalTaxes(): float
+    {
+        return array_sum(
+            $this->lines->map(fn(OrderLine $orderLine) => $orderLine->getTaxesAmount())->toArray()
+        );
+    }
+
     /**
      * @return DateTimeImmutable|null
      */

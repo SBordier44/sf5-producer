@@ -25,7 +25,11 @@
                         <tbody>
                         {% for order in orders %}
                             <tr>
-                                <td class="text-center">{{ order.orderReference }}</td>
+                                <td class="text-center">
+                                    <a href="{{ path('order_show', { orderReference: order.orderReference }) }}">
+                                        {{ order.orderReference }}
+                                    </a>
+                                </td>
                                 <td class="text-center">{{ order.createdAt|date('d/m/Y') }}</td>
                                 <td class="text-center">{{ order.farm.name }}</td>
                                 <td class="text-center">{{ order.numberOfProducts }}</td>
@@ -63,6 +67,9 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                </div>
+                <div class="card-footer">
+                    {{ knp_pagination_render(orders) }}
                 </div>
             </div>
         </div>
