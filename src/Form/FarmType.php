@@ -19,10 +19,10 @@ class FarmType extends AbstractType
     {
         $builder
             ->add(
-                'name',
+                'siret',
                 TextType::class,
                 [
-                    'label' => 'Nom de votre exploitation',
+                    'label' => 'Numéro Siret de votre établissement',
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
@@ -56,7 +56,7 @@ class FarmType extends AbstractType
                                 'description',
                                 TextareaType::class,
                                 [
-                                    'label' => 'Présentation de votre exploitation',
+                                    'label' => 'Présentation de votre établissement',
                                     'label_attr' => [
                                         'class' => 'font-weight-bold'
                                     ],

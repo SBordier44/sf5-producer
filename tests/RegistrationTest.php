@@ -49,7 +49,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ]
         ];
         yield [
@@ -60,7 +60,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Exploitation'
+                'registration[farm][siret]' => '34237633200082'
             ]
         ];
         yield [
@@ -121,7 +121,8 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][first]' => 'password',
                 'registration[plainPassword][second]' => 'password123',
                 'registration[firstName]' => 'John',
-                'registration[lastName]' => 'Doe'
+                'registration[lastName]' => 'Doe',
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Les mots de passe ne correspondent pas.',
             "producer"
@@ -133,7 +134,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => ''
+                'registration[farm][siret]' => ''
             ],
             'Cette valeur ne doit pas être vide.',
             "producer"
@@ -145,7 +146,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette valeur ne doit pas être vide.',
             "producer"
@@ -157,7 +158,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => '',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette valeur ne doit pas être vide.',
             "producer"
@@ -169,7 +170,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => '',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette valeur ne doit pas être vide.',
             "producer"
@@ -181,7 +182,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => '',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette valeur ne doit pas être vide.',
             "producer"
@@ -193,7 +194,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette valeur n\'est pas une adresse email valide.',
             "producer"
@@ -205,7 +206,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'fail',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette chaîne est trop courte. Elle doit avoir au minimum 8 caractères.',
             "producer"
@@ -217,7 +218,7 @@ class RegistrationTest extends WebTestCase
                 'registration[plainPassword][second]' => 'password',
                 'registration[firstName]' => 'John',
                 'registration[lastName]' => 'Doe',
-                'registration[farm][name]' => 'Ferme'
+                'registration[farm][siret]' => '34237633200082'
             ],
             'Cette adresse email est déjà utilisée.',
             "producer"

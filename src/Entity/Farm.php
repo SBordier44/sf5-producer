@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Validator\SiretValid;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -29,10 +30,17 @@ class Farm
 
     /**
      * @ORM\Column()
-     * @Assert\NotBlank
      * @Groups({"read"})
      */
     private string $name = '';
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", unique=true, length=14)
+     * @Assert\NotBlank
+     * @SiretValid()
+     */
+    private string $siret = '';
 
     /**
      * @ORM\Column(nullable=true, type="text")
@@ -178,6 +186,24 @@ class Farm
     public function setSlug(string $slug): Farm
     {
         $this->slug = $slug;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSiret(): string
+    {
+        return $this->siret;
+    }
+
+    /**
+     * @param string $siret
+     * @return Farm
+     */
+    public function setSiret(string $siret): Farm
+    {
+        $this->siret = $siret;
         return $this;
     }
 }
