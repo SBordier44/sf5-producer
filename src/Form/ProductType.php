@@ -27,6 +27,9 @@ class ProductType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Nom du produit',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -35,6 +38,9 @@ class ProductType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Description du produit',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )

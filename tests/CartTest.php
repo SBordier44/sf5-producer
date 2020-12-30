@@ -113,9 +113,9 @@ class CartTest extends WebTestCase
         self::assertRouteSame('security_login');
     }
 
-    public function testAccessDeniedAddToCart(): void
+    public function testAccessDeniedAddToCartForProducer(): void
     {
-        $client = static::createAuthenticatedClient("customer@email.com");
+        $client = static::createAuthenticatedClient("producer@email.com");
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get("router");
@@ -124,28 +124,6 @@ class CartTest extends WebTestCase
         $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
 
         $product = $entityManager->getRepository(Product::class)->getOne();
-
-        $client->request(
-            Request::METHOD_GET,
-            $router->generate(
-                "cart_add",
-                [
-                    "id" => $product->getId()
-                ]
-            )
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
-
-        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
-
-        $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
-
-        $product = $entityManager->getRepository(Product::class)->getOneBy(
-            [
-                'farm' => $farm->getId()
-            ]
-        );
 
         $client->request(
             Request::METHOD_GET,
@@ -210,6 +188,8 @@ class CartTest extends WebTestCase
 
         $product->setQuantity(5);
 
+        $entityManager->persist($product);
+
         $entityManager->flush();
 
         $client->request(
@@ -242,7 +222,7 @@ class CartTest extends WebTestCase
 
         self::assertEquals(1, $crawler->filter('tbody > tr')->count());
 
-        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
+        self::assertEquals(1, $crawler->filter('div > .alert-danger')->count());
 
         $cart = $crawler
             ->filter('input[id=cart_cart_0_quantity]')

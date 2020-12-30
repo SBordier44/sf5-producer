@@ -48,8 +48,9 @@ class CartHandler extends AbstractHandler
             if ($cartItem->getProduct()->getQuantity() === 0) {
                 $this->flashBag->add(
                     'warning',
-                    "Le produit <strong>{$cartItem->getProduct()->getName()}</strong> dans votre panier 
-                    n'est actuellement plus en stock. 
+                    "<i class='fas fa-exclamation-circle mr-2'></i>Le produit 
+                    <strong>{$cartItem->getProduct()->getName()}</strong> dans votre panier 
+                    n'est actuellement plus en stock. <br>
                     Veuillez le retirer afin de pouvoir continuer votre commande."
                 );
                 return;
@@ -57,10 +58,11 @@ class CartHandler extends AbstractHandler
 
             if ($cartItem->getProduct()->getQuantity() < $cartItem->getQuantity()) {
                 $this->flashBag->add(
-                    'warning',
-                    "Le produit <strong>{$cartItem->getProduct()->getName()}</strong> a 
-                    une quantité limitée à <strong>{$cartItem->getProduct()->getQuantity()}</strong> 
-                    Veuillez modifier la quantité désirée afin de continuer la commande."
+                    'danger',
+                    "<i class='fas fa-exclamation-triangle mr-2'></i>Le produit 
+                    <strong>{$cartItem->getProduct()->getName()}</strong> a 
+                    une quantité limitée à <strong>{$cartItem->getProduct()->getQuantity()}</strong>. <br> 
+                    Il est impossible de mettre une quantité supérieure."
                 );
                 return;
             }

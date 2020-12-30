@@ -1,43 +1,132 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ farm.name }}{{ site_name }}{% endblock %}
+{% block title %}{{ farm.name }}{{ parent() }}{% endblock %}
 
 {% block body %}
-    {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
-        <div class="alert alert-warning">
-            Vous avez commande en cours dans votre panier pour un autre producteur ({{ farm.name }}). <br>
-            Si vous souhaitez commander des produits chez ce producteur, veuillez terminer la commande en cours ou vider
-            votre panier.
-        </div>
-    {% endif %}
-    <div class="row">
-        {% for product in products %}
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-4">
-                <div class="card shadow-lg">
-                    <div class="card-header text-center">
-                        <img src="{{ asset(product.image.path) }}"
-                             alt="{{ product.name }}"
-                             style="max-height: 220px; max-width: 220px">
-                    </div>
-                    <div class="card-body">
-                        <span>Prix : <strong>{{ product.priceIncludingTaxes|format_currency('EUR') }}</strong></span>
-                        <p class="mt-4">
-                            {{ product.description|nl2br }}
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        {% if is_granted('add_to_cart', product) %}
-                            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-primary btn-sm btn-block">
-                                Ajouter au panier
-                            </a>
-                        {% else %}
-                            <button class="btn btn-secondary btn-block btn-sm disabled" disabled>
-                                Ajouter au panier
-                            </button>
-                        {% endif %}
-                    </div>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">{{ farm.name }}</h4>
                 </div>
             </div>
-        {% endfor %}
-    </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
+                <div class="alert alert-secondary">
+                    Vous avez une commande en cours dans votre panier pour le producteur
+                    <strong>{{ app.user.cart.first.product.farm.name }}</strong>. <br>
+                    Si vous souhaitez commander des produits chez ce producteur, veuillez terminer la commande en cours
+                    ou vider
+                    votre panier.
+                </div>
+            {% endif %}
+            <div class="row mb-5">
+                {% for product in products %}
+                    <div class="modal fade" id="productView_{{ product.id }}" tabindex="-1" role="dialog"
+                         style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body p-0">
+                                    <div class="row align-items-stretch">
+                                        <div class="col-lg-6 p-lg-0">
+                                            <a class="product-view d-block h-100 bg-cover bg-center"
+                                               style="background: url({{ asset(product.image.path) }})"
+                                               href="{{ asset(product.image.path) }}"
+                                               data-lightbox="productview" title="{{ product.name }}">
+                                            </a>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <button class="close p-4" type="button" data-dismiss="modal"
+                                                    aria-label="Fermer">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                            <div class="p-5 my-md-4">
+                                                <ul class="list-inline mb-2">
+                                                    <li class="list-inline-item m-0">
+                                                        <i class="fas fa-star small text-warning"></i>
+                                                    </li>
+                                                    <li class="list-inline-item m-0">
+                                                        <i class="fas fa-star small text-warning"></i>
+                                                    </li>
+                                                    <li class="list-inline-item m-0">
+                                                        <i class="fas fa-star small text-warning"></i>
+                                                    </li>
+                                                    <li class="list-inline-item m-0">
+                                                        <i class="fas fa-star small text-warning"></i>
+                                                    </li>
+                                                    <li class="list-inline-item m-0">
+                                                        <i class="fas fa-star small text-warning"></i>
+                                                    </li>
+                                                </ul>
+                                                <h2 class="h4">{{ product.name }}</h2>
+                                                <p class="text-muted">
+                                                    {{ product.priceIncludingTaxes|format_currency('EUR') }}
+                                                </p>
+                                                <p class="text-small mb-4">
+                                                    {{ product.description|nl2br }}
+                                                </p>
+                                                <div class="row mb-4">
+                                                    {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
+                                                        <div class="alert alert-secondary">
+                                                            Vous avez une commande en cours dans votre panier pour le
+                                                            producteur
+                                                            <strong>{{ app.user.cart.first.product.farm.name }}</strong>.
+                                                            <br>
+                                                            Si vous souhaitez commander des produits chez ce producteur,
+                                                            veuillez terminer la commande en cours ou vider
+                                                            votre panier.
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="col-sm-5 pl-sm-0 text-center align-items-center">
+                                                            <a class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center text-center justify-content-center px-0"
+                                                               href="{{ path('cart_add', {id: product.id}) }}">
+                                                                Ajouter au panier
+                                                            </a>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-4">
+                        <div class="product text-center">
+                            <div class="mb-3 position-relative">
+                                <div class="badge text-white badge-"></div>
+                                <a href="#productView_{{ product.id }}"
+                                   data-toggle="modal" class="d-block">
+                                    <img class="img-fluid w-100" src="{{ asset(product.image.path) }}"
+                                         alt="{{ product.name }}">
+                                </a>
+                                <div class="product-overlay">
+                                    <ul class="mb-0 list-inline">
+                                        {% if is_granted('add_to_cart', product) %}
+                                            <li class="list-inline-item m-0 p-0">
+                                                <a class="btn btn-sm btn-dark"
+                                                   href="{{ path('cart_add', {id: product.id}) }}">
+                                                    Ajouter au panier
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <h6>
+                                <a class="reset-anchor" href="{{ path('cart_add', {id: product.id}) }}">
+                                    {{ product.name }}
+                                </a>
+                            </h6>
+                            <p class="small text-muted">{{ product.priceIncludingTaxes|format_currency('EUR') }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

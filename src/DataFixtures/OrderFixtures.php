@@ -29,7 +29,6 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             'accepted',
             'refused',
             'canceled',
-            'settled',
             'processing',
             'ready',
             'issued'

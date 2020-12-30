@@ -56,8 +56,3 @@ window.initMap = () => {
     //     console.log(status)
     // }
 }
-
-navigator.geolocation.getCurrentPosition(position => {
-    console.log('latitude : ' + position.coords.latitude)
-    console.log('longitude : ' + position.coords.longitude)
-});

@@ -17,18 +17,24 @@ class UserInfoType extends AbstractType
     {
         $builder
             ->add(
-                'firstName',
+                'lastName',
                 TextType::class,
                 [
-                    'label' => 'Prénom',
+                    'label' => 'Votre Nom',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
             ->add(
-                'lastName',
+                'firstName',
                 TextType::class,
                 [
-                    'label' => 'Nom',
+                    'label' => 'Votre Prénom',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -37,6 +43,9 @@ class UserInfoType extends AbstractType
                 EmailType::class,
                 [
                     'label' => 'Adresse Email',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             );

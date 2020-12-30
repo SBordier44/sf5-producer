@@ -1,23 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes produits{% endblock %}
+{% block title %}Mes produits {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h1 class="mb-0">Mes produits</h1>
-                    <a href="{{ path('product_create') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-plus"></i> Créer un nouveau produit
-                    </a>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">Mes Produits</h4>
                 </div>
-                <div class="card-body">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 my-auto mx-auto">
+                    <a href="{{ path('product_create') }}" class="btn btn-sm btn-outline-primary float-right mb-4">
+                        <i class="fas fa-plus mr-2"></i>Créer un nouveau produit
+                    </a>
                     <table class="table table-striped mb-0">
                         <thead>
                         <tr>
+                            <th class="text-center"></th>
                             <th class="text-center">Nom du produit</th>
-                            <th class="text-center">Prix unitaire</th>
+                            <th class="text-center">Prix unitaire HT</th>
                             <th class="text-center">TVA</th>
                             <th class="text-center">Stock</th>
                             <th class="text-center">Actions</th>
@@ -26,13 +33,20 @@
                         <tbody>
                         {% for product in products %}
                             <tr>
-                                <td class="text-center">{{ product.name }}</td>
-                                <td class="text-center">{{ (product.price.unitPrice / 100)|format_currency('EUR') }}</td>
-                                <td class="text-center">{{ (product.price.vat) }}%</td>
-                                <td class="text-center">{{ (product.quantity) }}</td>
-                                <td>
+                                <td class="text-center align-middle">
+                                    {% if product.image.path is not null %}
+                                        <a href="{{ asset(product.image.path) }}" target="_blank">
+                                            <img src="{{ asset(product.image.path) }}" alt="" style="max-width: 40px;">
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <th scope="col" class="text-center align-middle">{{ product.name }}</th>
+                                <td class="text-center align-middle">{{ (product.price.unitPrice / 100)|format_currency('EUR') }}</td>
+                                <td class="text-center align-middle">{{ (product.price.vat) }}%</td>
+                                <td class="text-center align-middle">{{ (product.quantity) }}</td>
+                                <td class="text-center align-middle">
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
                                                 data-toggle="dropdown" aria-haspopup="true"
                                                 aria-expanded="false">
                                             <i class="fas fa-cogs"></i>
@@ -40,11 +54,11 @@
                                         <div class="dropdown-menu">
                                             <a href="{{ path('product_stock', {id: product.id}) }}"
                                                class="dropdown-item">
-                                                Stock
+                                                Modifier Stock
                                             </a>
                                             <a href="{{ path('product_update', {id: product.id}) }}"
                                                class="dropdown-item">
-                                                Modifier
+                                                Modifier Fiche
                                             </a>
                                         </div>
                                     </div>
@@ -54,10 +68,12 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer">
-
+            </div>
+            <div class="row">
+                <div class="col align-items-center">
+                    {{ knp_pagination_render(products) }}
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}

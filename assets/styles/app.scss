@@ -4,10 +4,51 @@
 @import "~@fortawesome/fontawesome-free/scss/brands";
 @import "~@fortawesome/fontawesome-free/scss/regular";
 
+@import "~leaflet/dist/leaflet.css";
+@import "~leaflet.markercluster/dist/MarkerCluster.css";
+@import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Langar&display=swap');
+
+@import "template/style.sea.scss";
+
 th, td {
   vertical-align: middle;
 }
 
 #map {
   height: 400px;
+}
+
+.section-title {
+  font-family: "Langar", sans-serif;
+  color: #379392;
+}
+
+.navbar-brand {
+  span {
+    font-family: "Dancing Script", serif;
+    font-size: 2rem !important;
+  }
+}
+
+label.required:after {
+  content: " *";
+  color: red;
+  font-weight: bold;
+}
+
+.badge-cart-count {
+  border-radius: 50%;
+  vertical-align: middle;
+  background-color: #379392;
+  display: inline-table;
+  color: white;
+  font-weight: normal;
+}
+
+.custom-file-input ~ .custom-file-label:lang(fr)::after {
+  content: "Choisir un fichier...";
 }

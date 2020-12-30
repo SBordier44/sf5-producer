@@ -23,6 +23,9 @@ class FarmType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Nom de votre exploitation',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -54,6 +57,9 @@ class FarmType extends AbstractType
                                 TextareaType::class,
                                 [
                                     'label' => 'Présentation de votre exploitation',
+                                    'label_attr' => [
+                                        'class' => 'font-weight-bold'
+                                    ],
                                     'empty_data' => ''
                                 ]
                             );

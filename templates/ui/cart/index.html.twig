@@ -1,16 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon panier{% endblock %}
+{% block title %}Mon panier{{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-12">
-            {{ form_start(form) }}
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">Mon Panier</h1>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">Mon Panier</h4>
                 </div>
-                <div class="card-body">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 my-auto mx-auto">
+                    {{ form_start(form) }}
                     {% if form.cart is not empty %}
                         <h6 class="h6 font-italic">Commande en cours chez le producteur
                             <span class="font-weight-bold">
@@ -24,55 +30,137 @@
                             Votre panier est vide
                         </div>
                     {% endif %}
-                    <table class="mt-4 table table-striped mb-0 table-sm">
-                        <thead>
-                        <tr class="table-secondary">
-                            <th class="text-center"></th>
-                            <th class="text-center">Nom</th>
-                            <th class="text-center">Prix unitaire HT</th>
-                            <th class="text-center">TVA</th>
-                            <th class="text-center">Quantité</th>
-                            <th class="text-center">Prix total TTC</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item in form.cart %}
-                            <tr>
-                                <td class="text-center align-middle">
-                                    <img src="{{ asset(item.vars.data.product.image.path) }}"
-                                         alt="{{ item.vars.data.product.name }}"
-                                         style="max-height: 40px; max-width: 40px">
-                                </td>
-                                <td class="text-center align-middle">{{ item.vars.data.product.name }}</td>
-                                <td class="text-center align-middle">{{ (item.vars.data.product.price.unitPrice / 100)|format_currency('EUR') }}</td>
-                                <td class="text-center align-middle">{{ (item.vars.data.product.price.vat) }}%</td>
-                                <td class="text-center align-middle">{{ form_widget(item.quantity) }}</td>
-                                <td class="text-center align-middle">{{ item.vars.data.priceIncludingTaxes|format_currency('EUR') }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="text-right align-middle" colspan="5">Total HT</td>
-                            <td class="text-center align-middle">{{ app.user.totalCartWithoutTaxes|format_currency('EUR') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right align-middle" colspan="5">Total TVA</td>
-                            <td class="text-center align-middle">{{ app.user.totalCartVat|format_currency('EUR') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right font-weight-bold align-middle" colspan="5">Total TTC</td>
-                            <td class="text-center font-weight-bold align-middle">{{ app.user.totalCartIncludingTaxes|format_currency('EUR') }}</td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-block btn-outline-primary" type="submit">Modifier</button>
-                    <a href="{{ path('order_create') }}" class="btn btn-block btn-primary">Valider ma commande</a>
+                    <div class="row">
+                        <div class="col-lg-8 mb-4 mb-lg-0">
+                            <div class="table-responsive mb-4">
+                                <table class="table">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0" scope="col">
+                                            <strong class="text-small text-uppercase">Produit</strong>
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <strong class="text-small text-uppercase">P.U.</strong>
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <strong class="text-small text-uppercase"></strong>
+                                        </th>
+                                        <th class="border-0" scope="col">
+                                            <strong class="text-small text-uppercase">Total</strong>
+                                        </th>
+                                        <th class="border-0" scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in form.cart %}
+                                        <tr>
+                                            <th class="pl-0 border-0" scope="row">
+                                                <div class="media align-items-center">
+                                                    <span class="reset-anchor d-block animsition-link">
+                                                        <img src="{{ asset(item.vars.data.product.image.path) }}"
+                                                             alt="{{ item.vars.data.product.name }}"
+                                                             width="70">
+                                                    </span>
+                                                    <div class="media-body ml-3">
+                                                        <span class="h6">
+                                                            <span class="reset-anchor animsition-link">
+                                                                {{ item.vars.data.product.name }}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <td class="align-middle border-0">
+                                                <p class="mb-0 small">
+                                                    {{ (item.vars.data.product.getPriceIncludingTaxes)|format_currency('EUR') }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle border-light">
+                                                <div class="border d-flex align-items-center justify-content-between px-3">
+                                                    <span class="small text-uppercase text-gray headings-font-family">
+                                                        Quantité
+                                                    </span>
+                                                    <div class="quantity">
+                                                        <a href="{{ path('cart_item_decrease', {id: item.vars.data.id}) }}"
+                                                           class="dec-btn p-0">
+                                                            <i class="fas fa-caret-left"></i>
+                                                        </a>
+                                                        {{ form_widget(item.quantity) }}
+                                                        <a href="{{ path('cart_item_increase', {id: item.vars.data.id}) }}"
+                                                           class="inc-btn p-0">
+                                                            <i class="fas fa-caret-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle border-0">
+                                                <p class="mb-0 small font-weight-bold">
+                                                    {{ item.vars.data.priceIncludingTaxes|format_currency('EUR') }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle border-0">
+                                                <a class="reset-anchor"
+                                                   href="{{ path('cart_item_remove', {id: item.vars.data.id}) }}">
+                                                    <i class="fas fa-trash-alt small text-danger"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if form.cart is not empty %}
+                                <div class="bg-light px-4 py-3">
+                                    <div class="row align-items-center text-center">
+                                        <div class="col-md-6 mb-3 mb-md-0 text-md-left">
+                                            <a class="btn btn-link p-0 text-dark btn-sm"
+                                               href="{{ path('farm_show', {slug: form.cart.0.vars.data.product.farm.slug}) }}">
+                                                <i class="fas fa-long-arrow-alt-left mr-2"></i>Continuer mes achats</a>
+                                        </div>
+                                        <div class="col-md-6 text-md-right">
+                                            <a class="btn btn-outline-dark btn-sm" href="{{ path('order_create') }}">
+                                                Valider ma commande<i class="fas fa-long-arrow-alt-right ml-2"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-0 rounded-0 p-lg-4 bg-light">
+                                <div class="card-body">
+                                    <h5 class="text-uppercase mb-4">Total Panier</h5>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <span class="text-uppercase small font-weight-bold">
+                                                Sous-Total H.T.
+                                            </span>
+                                            <span class="text-muted small">
+                                                {{ app.user.totalCartWithoutTaxes|format_currency('EUR') }}
+                                            </span>
+                                        </li>
+                                        <li class="border-bottom my-2"></li>
+                                        <li class="d-flex align-items-center justify-content-between mb-4">
+                                            <span class="text-uppercase small font-weight-bold">
+                                                TVA
+                                            </span>
+                                            <span class="text-muted small">{{ app.user.totalCartVat|format_currency('EUR') }}</span>
+                                        </li>
+                                        <li class="border-bottom my-2"></li>
+                                        <li class="d-flex align-items-center justify-content-between mb-4">
+                                            <span class="text-uppercase small font-weight-bold">
+                                                Total TTC
+                                            </span>
+                                            <span class="font-weight-bold">{{ app.user.totalCartIncludingTaxes|format_currency('EUR') }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
                 </div>
             </div>
-            {{ form_end(form) }}
         </div>
-    </div>
+    </section>
 {% endblock %}

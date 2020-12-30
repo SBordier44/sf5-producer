@@ -31,7 +31,10 @@ class UserPasswordType extends AbstractType
                             ]
                         )
                     ],
-                    'label' => 'Mot de passe actuel'
+                    'label' => 'Votre Mot de passe actuel',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                 ]
             )
             ->add(
@@ -41,10 +44,16 @@ class UserPasswordType extends AbstractType
                     'type' => PasswordType::class,
                     'required' => true,
                     'first_options' => [
-                        'label' => 'Nouveau mot de passe'
+                        'label' => 'Nouveau mot de passe',
+                        'label_attr' => [
+                            'class' => 'font-weight-bold'
+                        ],
                     ],
                     'second_options' => [
-                        'label' => 'Nouveau mot de passe (Confirmation)'
+                        'label' => 'Nouveau mot de passe (Confirmation)',
+                        'label_attr' => [
+                            'class' => 'font-weight-bold'
+                        ],
                     ],
                     'invalid_message' => 'Les mots de passe ne correspondent pas.'
                 ]
