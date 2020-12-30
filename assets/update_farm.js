@@ -43,13 +43,13 @@ class Address {
 class Map {
     constructor() {
         this.center = {
-            lat: 48.441049,
-            lng: 1.546233
+            lat: parseFloat($("#farm_address_position_latitude").val().replace(',', '.')),
+            lng: parseFloat($("#farm_address_position_longitude").val().replace(',', '.'))
         };
         this.map = null;
         this.marker = null;
         this.addresses = [];
-        this.loadGeolocation();
+        this.loadMap();
         $("#farm_address_address").on("input", this.search.bind(this));
     }
 
@@ -61,12 +61,13 @@ class Map {
             this.map.setZoom(16);
             this.marker = new google.maps.Marker({
                 position: {
-                    lat: parseFloat($("#farm_address_position_latitude").val()),
-                    lng: parseFloat($("#farm_address_position_longitude").val())
+                    lat: parseFloat($("#farm_address_position_latitude").val().replace(',', '.')),
+                    lng: parseFloat($("#farm_address_position_longitude").val().replace(',', '.'))
                 },
                 map: this.map,
-                title: "Mon exploitation"
+                title: $("#farm_name").text()
             });
+            this.map.setCenter(this.marker.getPosition())
         }
     }
 
@@ -105,20 +106,8 @@ class Map {
         this.addresses.forEach(address => address.render());
     }
 
-    loadGeolocation() {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                this.center.lat = position.coords.latitude;
-                this.center.lng = position.coords.longitude;
-                this.loadMap();
-            });
-        } else {
-            this.loadMap();
-        }
-    }
-
     loadMap() {
-        this.map = new google.maps.Map(document.getElementById('map'), {
+        this.map = new google.maps.Map(document.getElementById('google_map'), {
             center: this.center,
             zoom: 12
         });

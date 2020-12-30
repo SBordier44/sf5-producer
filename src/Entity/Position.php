@@ -38,12 +38,12 @@ class Position
     }
 
     /**
-     * @param float|null $longitude
+     * @param float|string|null $longitude
      * @return Position
      */
-    public function setLongitude(?float $longitude): Position
+    public function setLongitude($longitude): Position
     {
-        $this->longitude = $longitude;
+        $this->longitude = (float)$longitude;
         return $this;
     }
 
@@ -56,12 +56,12 @@ class Position
     }
 
     /**
-     * @param float|null $latitude
+     * @param float|string|null $latitude
      * @return Position
      */
-    public function setLatitude(?float $latitude): Position
+    public function setLatitude($latitude): Position
     {
-        $this->latitude = $latitude;
+        $this->latitude = (float)$latitude;
         return $this;
     }
 }

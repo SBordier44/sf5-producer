@@ -42,7 +42,9 @@ class UserFixtures extends Fixture
             ->setLastName($this->faker->lastName)
             ->setRegisteredAt(new DateTimeImmutable());
         $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, 'password'));
-        $producer->getFarm()->setName($producerAddress->name);
+        $producer->getFarm()
+            ->setName($producerAddress->name)
+            ->setSiret($producerAddress->siret);
         $position = (new Position())
             ->setLongitude($producerAddress->lng)
             ->setLatitude($producerAddress->lat);
@@ -66,7 +68,9 @@ class UserFixtures extends Fixture
                 ->setLastName($this->faker->lastName)
                 ->setRegisteredAt(new DateTimeImmutable());
             $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, 'password'));
-            $producer->getFarm()->setName($producerAddress->name);
+            $producer->getFarm()
+                ->setName($producerAddress->name)
+                ->setSiret($producerAddress->siret);
             $position = (new Position())
                 ->setLongitude($producerAddress->lng)
                 ->setLatitude($producerAddress->lat);

@@ -17,7 +17,11 @@
             <div class="row mb-5">
                 <div class="col-6 my-auto mx-auto">
                     {{ form_start(form) }}
-                    {{ form_row(form.name) }}
+                    {{ form_row(form.siret) }}
+                    <div class="mb-4">
+                        <u>Dénomination :</u> <strong id="farm_name">{{ form.vars.data.name }}</strong>
+                    </div>
+
                     {{ form_row(form.description) }}
                     <div class="form-group">
                         {{ form_label(form.address.address) }}
@@ -33,28 +37,29 @@
                     {{ form_row(form.address.phone) }}
                     {{ form_row(form.image) }}
                     {% if form.vars.data.image.path is not null %}
-                        Image actuelle
-                        <a href="{{ asset(form.vars.data.image.path) }}" target="_blank">
-                            <img src="{{ asset(form.vars.data.image.path) }}" alt="" style="max-width: 30px;">
-                        </a>
-                        <a type="button" class="btn btn-outline-danger btn-remove-file btn-sm float-right"
-                           data-target="#farm_image_path">
-                            Supprimer l'image
-                        </a>
+                        <div class="mb-4">
+                            Image actuelle
+                            <a href="{{ asset(form.vars.data.image.path) }}" target="_blank">
+                                <img src="{{ asset(form.vars.data.image.path) }}" alt="" style="max-width: 30px;">
+                            </a>
+                            <a type="button" class="btn btn-outline-danger btn-remove-file btn-sm float-right"
+                               data-target="#farm_image_path">
+                                Supprimer l'image
+                            </a>
+                        </div>
                     {% endif %}
-                    <div class="mt-4">
-                        <button class="btn btn-sm btn-primary float-right" type="submit">
+                    <div class="align-items-center text-center">
+                        <button class="btn btn-sm btn-primary text-center" type="submit">
                             Enregistrer les modifications
                         </button>
-                        <a href="{{ path('product_delete', {id: form.vars.data.id}) }}"
-                           class="btn btn-sm btn-outline-danger float-left">Supprimer le produit</a>
                     </div>
+                    {{ form_rest(form) }}
                     {{ form_end(form) }}
                 </div>
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body p-0 flex-grow-1">
-                            <div id="map" class="w-100 h-100"></div>
+                            <div id="google_map" class="w-100 h-100"></div>
                         </div>
                     </div>
                 </div>

@@ -6,6 +6,7 @@
 parameters:
   upload_web_dir: 'uploads/'
   upload_absolute_dir: '%kernel.project_dir%/public/%upload_web_dir%'
+  app.google_api_key: '%env(GOOGLE_MAP_API_KEY)%'
 
 services:
   # default configuration for services in *this* file

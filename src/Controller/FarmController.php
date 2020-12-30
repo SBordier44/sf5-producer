@@ -64,7 +64,6 @@ class FarmController extends AbstractController
     public function update(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $handler = $handlerFactory->createHandler(UpdateFarmHandler::class);
-
         if ($handler->handle($request, $this->getUser()->getFarm())) {
             return $this->redirectToRoute('farm_update');
         }

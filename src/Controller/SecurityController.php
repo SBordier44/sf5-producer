@@ -38,7 +38,7 @@ class SecurityController extends AbstractController
         $handler = $handlerFactory->createHandler(RegistrationHandler::class);
 
         if ($handler->handle($request, $user)) {
-            return $this->redirectToRoute('index');
+            return $this->redirectToRoute('security_login');
         }
 
         return $this->render(

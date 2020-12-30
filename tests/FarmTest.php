@@ -109,7 +109,7 @@ class FarmTest extends WebTestCase
 
         $form = $crawler->filter('form[name=farm]')->form(
             [
-                'farm[name]' => 'NextGenExploit Modified',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Super Exploitation de nouvelle génération',
                 'farm[address][address]' => '25 Rue de la pelouse verte',
                 'farm[address][addressExtra]' => '',
@@ -169,7 +169,7 @@ class FarmTest extends WebTestCase
     {
         yield [
             [
-                'farm[name]' => '',
+                'farm[siret]' => '',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -184,7 +184,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => '',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -199,7 +199,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => '',
                 'farm[address][zipCode]' => '28000',
@@ -214,7 +214,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '',
@@ -229,7 +229,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -244,7 +244,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -259,7 +259,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -274,7 +274,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -289,7 +289,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -304,7 +304,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => '28000',
@@ -319,7 +319,7 @@ class FarmTest extends WebTestCase
         ];
         yield [
             [
-                'farm[name]' => 'Exploitation',
+                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Description',
                 'farm[address][address]' => 'address',
                 'farm[address][zipCode]' => 'fail',
