@@ -83,54 +83,6 @@ class OrderTest extends WebTestCase
         );
     }
 
-    public function testSuccessfullCancelOrderInAcceptedStatus(): void
-    {
-        $client = static::createAuthenticatedClient('customer@email.com');
-
-        /** @var RouterInterface $router */
-        $router = $client->getContainer()->get('router');
-
-        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
-
-        $customer = $entityManager->getRepository(Customer::class)->findOneByEmail('customer@email.com');
-
-        $order = $entityManager->getRepository(Order::class)->findOneBy(
-            [
-                'customer' => $customer,
-                'state' => 'accepted'
-            ]
-        );
-
-        $productOldStock = $order->getLines()->first()->getProduct()->getQuantity();
-
-        $client->request(
-            Request::METHOD_GET,
-            $router->generate(
-                'order_cancel',
-                [
-                    'id' => $order->getId()
-                ]
-            )
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
-
-        $entityManager->clear();
-
-        $order = $entityManager->getRepository(Order::class)->find($order->getId());
-
-        self::assertEquals('canceled', $order->getState());
-
-        $productNewStock = $entityManager->getRepository(Product::class)->find(
-            $order->getLines()->first()->getProduct()->getId()
-        );
-
-        self::assertEquals(
-            $productNewStock->getQuantity(),
-            $productOldStock + $order->getLines()->first()->getQuantity()
-        );
-    }
-
     public function testSuccessfullRefuseOrder(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');
@@ -222,44 +174,6 @@ class OrderTest extends WebTestCase
         self::assertEquals('accepted', $order->getState());
     }
 
-    public function testSuccessfullSettleOrder(): void
-    {
-        $client = static::createAuthenticatedClient('customer@email.com');
-
-        /** @var RouterInterface $router */
-        $router = $client->getContainer()->get('router');
-
-        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
-
-        $customer = $entityManager->getRepository(Customer::class)->findOneByEmail("customer@email.com");
-
-        /** @var Order $order */
-        $order = $entityManager->getRepository(Order::class)->findOneBy(
-            [
-                'state' => 'accepted',
-                'customer' => $customer->getId()
-            ]
-        );
-
-        $client->request(
-            Request::METHOD_GET,
-            $router->generate(
-                'order_settle',
-                [
-                    'id' => $order->getId()
-                ]
-            )
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
-
-        $entityManager->clear();
-
-        $order = $entityManager->getRepository(Order::class)->find($order->getId());
-
-        self::assertEquals('settled', $order->getState());
-    }
-
     public function testSuccessfullProcessOrder(): void
     {
         $client = static::createAuthenticatedClient('producer@email.com');
@@ -275,7 +189,7 @@ class OrderTest extends WebTestCase
         $order = $entityManager->getRepository(Order::class)->findOneBy(
             [
                 'farm' => $producer->getFarm(),
-                'state' => 'settled'
+                'state' => 'accepted'
             ]
         );
 
@@ -613,7 +527,7 @@ class OrderTest extends WebTestCase
 
         $crawler = $client->followRedirect();
 
-        self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
+        self::assertEquals(1, $crawler->filter('div > .alert-danger')->count());
     }
 
     public function testSuccessfullOrderDetailsForCustomer(): void

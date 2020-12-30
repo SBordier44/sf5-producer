@@ -1,16 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Exploitation{% endblock %}
+{% block title %}Mon Exploitation{{ parent() }}{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-    <div class="row justify-content-center align-items-stretch">
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">Mon exploitation</h1>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">Mon Exploitation</h4>
                 </div>
-                <div class="card-body">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-6 my-auto mx-auto">
+                    {{ form_start(form) }}
                     {{ form_row(form.name) }}
                     {{ form_row(form.description) }}
                     <div class="form-group">
@@ -25,25 +31,36 @@
                     {{ form_row(form.address.region) }}
                     {{ form_row(form.address.country) }}
                     {{ form_row(form.address.phone) }}
-                    <button type="button" class="btn btn-outline-danger btn-remove-file mt-4" data-target="#farm_image_path">
-                        Supprimer l'image
-                    </button>
                     {{ form_row(form.image) }}
+                    {% if form.vars.data.image.path is not null %}
+                        Image actuelle
+                        <a href="{{ asset(form.vars.data.image.path) }}" target="_blank">
+                            <img src="{{ asset(form.vars.data.image.path) }}" alt="" style="max-width: 30px;">
+                        </a>
+                        <a type="button" class="btn btn-outline-danger btn-remove-file btn-sm float-right"
+                           data-target="#farm_image_path">
+                            Supprimer l'image
+                        </a>
+                    {% endif %}
+                    <div class="mt-4">
+                        <button class="btn btn-sm btn-primary float-right" type="submit">
+                            Enregistrer les modifications
+                        </button>
+                        <a href="{{ path('product_delete', {id: form.vars.data.id}) }}"
+                           class="btn btn-sm btn-outline-danger float-left">Supprimer le produit</a>
+                    </div>
+                    {{ form_end(form) }}
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn-block btn-primary">Modifier</button>
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body p-0 flex-grow-1">
+                            <div id="map" class="w-100 h-100"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <div class="card h-100">
-                <div class="card-body p-0 flex-grow-1">
-                    <div id="map" class="w-100 h-100"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{ form_end(form) }}
+    </section>
 {% endblock %}
 {% block javascripts %}
     <script defer

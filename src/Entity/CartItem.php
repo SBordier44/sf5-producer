@@ -114,6 +114,11 @@ class CartItem
         $this->quantity++;
     }
 
+    public function decreaseQuantity(): void
+    {
+        $this->quantity--;
+    }
+
     public function getPriceIncludingTaxes(): float
     {
         return $this->product->getPriceIncludingTaxes() * $this->quantity;

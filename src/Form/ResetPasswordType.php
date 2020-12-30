@@ -22,10 +22,16 @@ class ResetPasswordType extends AbstractType
                 'type' => PasswordType::class,
                 'required' => true,
                 'first_options' => [
-                    'label' => 'Mot de passe'
+                    'label' => 'Nouveau Mot de passe',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                 ],
                 'second_options' => [
-                    'label' => 'Mot de passe (Confirmation)'
+                    'label' => 'Nouveau Mot de passe (Confirmation)',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
                 'empty_data' => ''

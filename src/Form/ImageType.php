@@ -27,7 +27,13 @@ class ImageType extends AbstractType
                 'file',
                 FileType::class,
                 [
-                    'label' => 'Photo',
+                    'label' => 'Image',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
+                    'attr' => [
+                        'class' => 'custom-file-input'
+                    ],
                     'required' => false
                 ]
             );

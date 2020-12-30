@@ -16,7 +16,6 @@ class OrderVoter extends Voter
 {
     public const CANCEL = 'cancel';
     public const REFUSE = 'refuse';
-    public const SETTLE = 'settle';
     public const ACCEPT = 'accept';
     public const PROCESS = 'process';
     public const READY = 'ready';
@@ -37,7 +36,6 @@ class OrderVoter extends Voter
                 [
                     self::CANCEL,
                     self::REFUSE,
-                    self::SETTLE,
                     self::ACCEPT,
                     self::PROCESS,
                     self::READY,
@@ -81,11 +79,6 @@ class OrderVoter extends Voter
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::DELIVER);
-
-            case self::SETTLE:
-                return $user instanceof Customer
-                    && $user === $subject->getCustomer()
-                    && $this->orderStateMachine->can($subject, self::SETTLE);
         }
 
         /** @codeCoverageIgnore */

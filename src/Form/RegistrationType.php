@@ -25,7 +25,10 @@ class RegistrationType extends AbstractType
                 'email',
                 EmailType::class,
                 [
-                    'label' => 'Adresse Email',
+                    'label' => 'Votre adresse email',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -36,20 +39,18 @@ class RegistrationType extends AbstractType
                     'type' => PasswordType::class,
                     'required' => true,
                     'first_options' => [
-                        'label' => 'Mot de passe'
+                        'label' => 'Mot de passe',
+                        'label_attr' => [
+                            'class' => 'font-weight-bold'
+                        ],
                     ],
                     'second_options' => [
-                        'label' => 'Mot de passe (Confirmation)'
+                        'label' => 'Mot de passe (Confirmation)',
+                        'label_attr' => [
+                            'class' => 'font-weight-bold'
+                        ],
                     ],
                     'invalid_message' => 'Les mots de passe ne correspondent pas.',
-                    'empty_data' => ''
-                ]
-            )
-            ->add(
-                'firstName',
-                TextType::class,
-                [
-                    'label' => 'Prénom',
                     'empty_data' => ''
                 ]
             )
@@ -57,7 +58,21 @@ class RegistrationType extends AbstractType
                 'lastName',
                 TextType::class,
                 [
-                    'label' => 'Nom',
+                    'label' => 'Votre Nom',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
+                    'empty_data' => ''
+                ]
+            )
+            ->add(
+                'firstName',
+                TextType::class,
+                [
+                    'label' => 'Votre Prénom',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )

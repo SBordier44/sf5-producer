@@ -1,15 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des commandes{% endblock %}
+{% block title %}Gestion des commandes{{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">Gestion des commandes</h1>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">Gestion des commandes</h4>
                 </div>
-                <div class="card-body">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 my-auto mx-auto">
                     <table class="table table-striped mb-0">
                         <thead>
                         <tr>
@@ -30,9 +36,7 @@
                                     {% if order.state == 'created' %}
                                         <span class="badge badge-light">En attente</span>
                                     {% elseif order.state == 'accepted' %}
-                                        <span class="badge badge-warning">Acceptée - Réglement en attente</span>
-                                    {% elseif order.state == 'settled' %}
-                                        <span class="badge badge-primary">Réglée</span>
+                                        <span class="badge badge-warning">Acceptée</span>
                                     {% elseif order.state == 'processing' %}
                                         <span class="badge badge-secondary">En cours de préparation</span>
                                     {% elseif order.state == 'ready' %}
@@ -72,10 +76,12 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer">
+            </div>
+            <div class="row">
+                <div class="col align-items-center">
                     {{ knp_pagination_render(orders) }}
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}

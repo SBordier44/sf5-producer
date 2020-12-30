@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\CartItem;
 use App\Entity\Product;
 use App\Handler\CartHandler;
 use App\HandlerFactory\HandlerFactoryInterface;
@@ -68,5 +69,46 @@ class CartController extends AbstractController
                 'form' => $handler->createView()
             ]
         );
+    }
+
+    /**
+     * @param CartItem $cartItem
+     * @Route("/{id}/increase_quantity", name="cart_item_increase")
+     * @return RedirectResponse
+     */
+    public function increaseQuantity(CartItem $cartItem): RedirectResponse
+    {
+        if ($cartItem->getQuantity() < 100) {
+            $cartItem->increaseQuantity();
+            $this->getDoctrine()->getManager()->flush();
+        }
+        return $this->redirectToRoute('cart_index');
+    }
+
+    /**
+     * @param CartItem $cartItem
+     * @Route("/{id}/decrease_quantity", name="cart_item_decrease")
+     * @return RedirectResponse
+     */
+    public function decreaseQuantity(CartItem $cartItem): RedirectResponse
+    {
+        if ($cartItem->getQuantity() > 0) {
+            $cartItem->decreaseQuantity();
+            $this->getDoctrine()->getManager()->flush();
+        }
+        return $this->redirectToRoute('cart_index');
+    }
+
+    /**
+     * @param CartItem $cartItem
+     * @Route("/{id}/remove", name="cart_item_remove")
+     * @return RedirectResponse
+     */
+    public function removeItem(CartItem $cartItem): RedirectResponse
+    {
+        $this->getDoctrine()->getManager()->remove($cartItem);
+        $this->getDoctrine()->getManager()->flush();
+        $this->addFlash('success', 'Produit retiré de votre panier avec succès.');
+        return $this->redirectToRoute('cart_index');
     }
 }

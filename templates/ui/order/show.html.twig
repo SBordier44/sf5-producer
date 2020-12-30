@@ -1,24 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détail de la commande {{ order.orderReference }}{% endblock %}
+{% block title %}Détail de la commande {{ order.orderReference }}{{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">Détail de la commande {{ order.orderReference }}</h1>
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h4 class="h4 text-uppercase mb-0 text-center section-title">
+                        Détail de la commande {{ order.orderReference }}
+                    </h4>
                 </div>
-                <div class="card-body">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 my-auto mx-auto">
                     <table class="mt-4 table table-striped mb-0 table-sm">
                         <thead>
                         <tr class="table-secondary">
                             <th class="text-center"></th>
                             <th class="text-center">Nom</th>
-                            <th class="text-center">Prix unitaire HT</th>
-                            <th class="text-center">TVA</th>
+                            <th class="text-center">P.U. HT</th>
+                            <th class="text-center">% TVA</th>
                             <th class="text-center">Quantité</th>
-                            <th class="text-center">Prix total TTC</th>
+                            <th class="text-center">Total TTC</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -33,7 +41,7 @@
                                 <td class="text-center align-middle">{{ (item.product.price.unitPrice / 100)|format_currency('EUR') }}</td>
                                 <td class="text-center align-middle">{{ (item.product.price.vat) }}%</td>
                                 <td class="text-center align-middle">{{ item.quantity }}</td>
-                                <td class="text-center align-middle">{{ item.totalIncludingTaxes|format_currency('EUR') }}</td>
+                                <td class="text-center align-middle">{{ item.total|format_currency('EUR') }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -53,11 +61,10 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <a href="javascript: window.history.back()"
-                       class="btn btn-sm btn-outline-info float-right">Retour</a>
-                </div>
+            </div>
+            <div class="row align-items-center">
+                <a href="javascript: window.history.back()" class="btn btn-sm btn-outline-info float-right">Retour</a>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}

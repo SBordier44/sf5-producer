@@ -1,86 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Bienvenue !{{ site_name }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} - {{ site_name }}{% endblock %}</title>
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Produceur au consommateur</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#header-navbar"
-                aria-controls="header-navbar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="header-navbar">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path("index") }}">Accueil <span class="sr-only">(current)</span></a>
-                </li>
-                {% if is_granted("ROLE_USER") %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle " href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Mon Compte
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            {% if(is_granted('ROLE_PRODUCER')) %}
-                                <a class="dropdown-item"
-                                   href="{{ path("farm_update") }}">
-                                    Mon Exploitation
+<div class="page-holder">
+    <header class="header bg-white">
+        <div class="container px-0 px-lg-3">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="{{ path('index') }}">
+                    <span class="font-weight-bold text-dark">{{ site_name }}</span>
+                </a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item mr-1">
+                            <a class="nav-link" href="{{ path('index') }}">
+                                <i class="fas fa-home mr-2 text-gray"></i>Accueil
+                            </a>
+                        </li>
+                        {% if is_granted('ROLE_CUSTOMER') %}
+                            <li class="nav-item mr-1">
+                                <a class="nav-link" href="{{ path('cart_index') }}">
+                                    <i class="fas fa-shopping-cart mr-2 text-gray"></i>Mon Panier
+                                    {% if app.user.cart.count %}
+                                        <span class="badge badge-cart-count">{{ app.user.cart.count }}</span>
+                                    {% endif %}
                                 </a>
-                                <a class="dropdown-item"
-                                   href="{{ path("product_index") }}">
-                                    Mes Produits
+                            </li>
+                        {% endif %}
+                        {% if not is_granted("ROLE_USER") %}
+                            <li class="nav-item mr-1">
+                                <a class="nav-link" href="{{ path('security_login') }}">
+                                    <i class="fas fa-sign-in-alt mr-2 text-gray"></i>Se connecter
                                 </a>
-                                <a class="dropdown-item"
-                                   href="{{ path("order_manage") }}">
-                                    Gestion Commandes
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#" id="registerDropdown"
+                                   data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">
+                                    <i class="fas fa-user-alt mr-2 text-gray"></i>S'inscrire
                                 </a>
-                            {% else %}
-                                <a class="dropdown-item"
-                                   href="{{ path("cart_index") }}">
-                                    Mon Panier
+                                <div class="dropdown-menu mt-3" aria-labelledby="registerDropdown">
+                                    <a class="dropdown-item border-0 transition-link"
+                                       href="{{ path('security_registration', {role: 'customer'}) }}">
+                                        <i class="fas fa-user mr-2"></i>En tant que consommateur
+                                    </a>
+                                    <a class="dropdown-item border-0 transition-link"
+                                       href="{{ path('security_registration', {role: 'producer'}) }}">
+                                        <i class="fas fa-user-tie mr-2"></i>En tant que producteur
+                                    </a>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#" id="accountDropdown"
+                                   data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">
+                                    <i class="fas fa-user-circle mr-1 text-gray"></i> Mon Compte
                                 </a>
-                                <a class="dropdown-item"
-                                   href="{{ path("order_history") }}">
-                                    Mes Commandes
-                                </a>
-                            {% endif %}
-                            <a class="dropdown-item" href="{{ path('user_edit_info') }}">Mes informations</a>
-                            <a class="dropdown-item" href="{{ path('user_edit_password') }}">Mon mot de passe</a>
-                            <a class="dropdown-item" href="{{ path('security_logout') }}">Se Déconnecter</a>
-                        </div>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path("security_login") }}">Se connecter</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle " href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            S'inscrire
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ path("security_registration", { role: 'producer' }) }}">En
-                                tant que producteur</a>
-                            <a class="dropdown-item" href="{{ path("security_registration", { role: 'customer' }) }}">En
-                                tant que consommateur</a>
-                        </div>
-                    </li>
-                {% endif %}
-            </ul>
+                                <div class="dropdown-menu mt-3" aria-labelledby="accountDropdown">
+                                    {% if is_granted('ROLE_PRODUCER') %}
+                                        <a class="dropdown-item border-0 transition-link"
+                                           href="{{ path('farm_update') }}">
+                                            <i class="fas fa-warehouse mr-2"></i>Mon Exploitation
+                                        </a>
+                                        <a class="dropdown-item border-0 transition-link"
+                                           href="{{ path('product_index') }}">
+                                            <i class="fab fa-product-hunt mr-2"></i>Mes Produits
+                                        </a>
+                                        <a class="dropdown-item border-0 transition-link"
+                                           href="{{ path('order_manage') }}">
+                                            <i class="fas fa-cart-arrow-down mr-2"></i>Commandes Client
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item border-0 transition-link"
+                                           href="{{ path('order_history') }}">
+                                            <i class="fas fa-cart-arrow-down mr-2"></i>Mes Commandes
+                                        </a>
+                                    {% endif %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item border-0 transition-link"
+                                       href="{{ path('user_edit_info') }}">
+                                        <i class="fas fa-user-circle mr-2"></i>Mes Informations
+                                    </a>
+                                    <a class="dropdown-item border-0 transition-link"
+                                       href="{{ path('user_edit_password') }}">
+                                        <i class="fas fa-user-shield mr-2"></i>Mon Mot de passe
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item border-0 transition-link text-danger"
+                                       href="{{ path('security_logout') }}">
+                                        <i class="fas fa-power-off mr-2"></i>Se Déconnecter
+                                    </a>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
         </div>
-    </nav>
-</header>
-<div class="container">
+    </header>
     {% include('ui/flashes.html.twig') %}
     {% block body %}{% endblock %}
+    <footer class="bg-dark text-white">
+        <div class="container py-4">
+            <div class="row py-5">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">{{ site_name }}</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a class="footer-link" href="#">Nous Contacter</a></li>
+                        <li><a class="footer-link" href="#">Conditions Générales d'Utilisation</a></li>
+                        <li><a class="footer-link" href="#">Mentions Légales</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0"></div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase mb-3">Réseaux Sociaux</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a class="footer-link" href="#">Twitter</a></li>
+                        <li><a class="footer-link" href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top pt-4" style="border-color: #1d1d1d !important">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="small text-muted mb-0">© 2020 Tous droits réservés.</p>
+                    </div>
+                    <div class="col-lg-6 text-lg-right"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
+
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}

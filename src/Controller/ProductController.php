@@ -10,6 +10,7 @@ use App\Handler\ProductStockUpdateHandler;
 use App\Handler\UpdateProductHandler;
 use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\ProductRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,16 +26,32 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductController extends AbstractController
 {
     /**
+     * @param Request $request
      * @param ProductRepository $productRepository
+     * @param PaginatorInterface $paginator
      * @return Response
      * @Route("/", name="product_index")
      */
-    public function index(ProductRepository $productRepository): Response
-    {
+    public function index(
+        Request $request,
+        ProductRepository $productRepository,
+        PaginatorInterface $paginator
+    ): Response {
+        $products = $paginator->paginate(
+            $productRepository->findByFarm($this->getUser()->getFarm()),
+            $request->query->getInt('page', 1)
+        );
+        $products->setCustomParameters(
+            [
+                'align' => 'center',
+                'size' => 'small',
+                'rounded' => true
+            ]
+        );
         return $this->render(
             'ui/product/index.html.twig',
             [
-                'products' => $this->getUser() ? $productRepository->findByFarm($this->getUser()->getFarm()) : []
+                'products' => $products
             ]
         );
     }

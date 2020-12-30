@@ -13,6 +13,12 @@ security:
       security: false
     main:
       anonymous: true
+      remember_me:
+        secure: true
+        lifetime: 604800
+        secret: '%kernel.secret%'
+        path: /
+        samesite: lax
       lazy: true
       provider: user_doctrine
       guard:

@@ -14,7 +14,13 @@ class ForgottenPasswordType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('email', EmailType::class);
+        $builder->add('email', EmailType::class, [
+            'label_attr' => [
+                'class' => 'font-weight-bold'
+            ],
+            'label' => 'Votre Email',
+            'empty_data' => ''
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

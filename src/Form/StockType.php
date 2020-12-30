@@ -15,7 +15,18 @@ class StockType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('quantity', NumberType::class);
+            ->add(
+                'quantity',
+                NumberType::class,
+                [
+                    'label' => 'Quantité',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
+                    'required' => true,
+                    'empty_data' => 1
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

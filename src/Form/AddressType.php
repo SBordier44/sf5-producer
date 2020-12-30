@@ -20,6 +20,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Adresse',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -28,7 +31,11 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'required' => false,
-                    'label' => 'Complément d\'adresse'
+                    'label' => 'Complément d\'adresse',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
+                    'empty_data' => ''
                 ]
             )
             ->add(
@@ -36,6 +43,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Code postal',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -44,6 +54,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Ville',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -52,6 +65,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Département / Région',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -60,6 +76,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Pays',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             )
@@ -75,6 +94,9 @@ class AddressType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Téléphone',
+                    'label_attr' => [
+                        'class' => 'font-weight-bold'
+                    ],
                     'empty_data' => ''
                 ]
             );
