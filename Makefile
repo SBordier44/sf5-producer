@@ -3,7 +3,7 @@ analyze:
 	./vendor/bin/phpcs
 
 .PHONY: tests vendor
-tests: vendor
+tests:
 	make prepare-test
 	./vendor/bin/simple-phpunit
 

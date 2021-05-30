@@ -29,3 +29,5 @@ yarn-error.log
 .php-version
 process.env
 .php_cs.cache
+.idea
+.env
