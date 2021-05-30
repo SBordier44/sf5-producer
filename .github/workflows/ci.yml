@@ -43,12 +43,12 @@ jobs:
             -   name: Install Composer dependencies
                 run: |
                     cp .env.sample .env
-                    GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+                    GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} composer install
             -   name: Install NPM dependencies
                 run: |
-                    npm install
+                    yarn install
                     cp process.env.dist process.env
-                    GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} npm run dev
+                    GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} yarn build
             -   name: Prepare database
                 run: |
                     php bin/console doctrine:database:create
