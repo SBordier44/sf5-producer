@@ -19,11 +19,39 @@
         <section class="mt-4 mb-4">
             <div class="row">
                 <div class="col-12">
-                    <h4>Les producteurs près de chez moi</h4>
-                    <small class="text-muted">
-                        Choisissez un producteur sur la carte pour voir les produits qu'il propose
-                    </small>
-                    <div id="map" class="vh-100"></div>
+                    {% if not app.user and not app.user.roles in ['customer']|keys %}
+                        <h4>Les producteurs près de chez moi</h4>
+                        <small class="text-muted">
+                            Choisissez un producteur sur la carte pour voir les produits qu'il propose
+                        </small>
+                        <div id="map" class="vh-100"></div>
+                    {% else %}
+                        <h4>Commandes en attente de validation</h4>
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Date</th>
+                                <th class="text-center">Numéro de commande</th>
+                                <th class="text-center">Nombre de produits</th>
+                                <th class="text-center">Total TTC</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td class="text-center">{{ order.createdAt|date('d/m/Y') }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ path('order_show', {orderReference: order.orderReference}) }}">
+                                            {{ order.orderReference }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center">{{ order.numberOfProducts }}</td>
+                                    <td class="text-center">{{ order.totalIncludingTaxes|format_currency('EUR') }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
                 </div>
             </div>
         </section>

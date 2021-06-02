@@ -252,6 +252,8 @@ class OrderController extends AbstractController
      */
     public function show(Order $order): Response
     {
+        $this->denyAccessUnlessGranted(OrderVoter::PRODUCER_VIEW, $order);
+
         return $this->render(
             'ui/order/show.html.twig',
             [

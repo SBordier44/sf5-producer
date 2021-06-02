@@ -10,6 +10,7 @@ use App\Entity\Producer;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class OrderVoter extends Voter
@@ -20,6 +21,7 @@ class OrderVoter extends Voter
     public const PROCESS = 'process';
     public const READY = 'ready';
     public const DELIVER = 'deliver';
+    public const PRODUCER_VIEW = 'producer_view';
 
     private WorkflowInterface $orderStateMachine;
 
@@ -39,7 +41,8 @@ class OrderVoter extends Voter
                     self::ACCEPT,
                     self::PROCESS,
                     self::READY,
-                    self::DELIVER
+                    self::DELIVER,
+                    self::PRODUCER_VIEW
                 ]
             );
     }
@@ -79,6 +82,17 @@ class OrderVoter extends Voter
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, self::DELIVER);
+
+            case self::PRODUCER_VIEW:
+                if ($user && $user instanceof Customer) {
+                    return $user->getId() === $subject->getCustomer()->getId();
+                }
+
+                if ($user && $user instanceof Producer) {
+                    return $user->getId() === $subject->getFarm()->getProducer()->getId();
+                }
+
+                return false;
         }
 
         /** @codeCoverageIgnore */

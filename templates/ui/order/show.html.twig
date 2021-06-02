@@ -18,6 +18,26 @@
         <div class="container">
             <div class="row mb-5">
                 <div class="col-12 my-auto mx-auto">
+                    {% if is_granted('accept', order) and workflow_can(order, 'accept') %}
+                        <a href="{{ path('order_accept', {id: order.id}) }}"
+                           class="btn btn-outline-success btn-sm">Accepter</a>
+                    {% endif %}
+                    {% if is_granted('refuse', order) and workflow_can(order, 'refuse') %}
+                        <a href="{{ path('order_refuse', {id: order.id}) }}"
+                           class="btn btn-outline-danger btn-sm">Refuser</a>
+                    {% endif %}
+                    {% if is_granted('process', order) and workflow_can(order, 'process') %}
+                        <a href="{{ path('order_process', {id: order.id}) }}"
+                           class="btn btn-outline-primary btn-sm">Mettre en préparation</a>
+                    {% endif %}
+                    {% if is_granted('ready', order) and workflow_can(order, 'ready') %}
+                        <a href="{{ path('order_ready', {id: order.id}) }}"
+                           class="btn btn-outline-info btn-sm">Prête</a>
+                    {% endif %}
+                    {% if is_granted('deliver', order) and workflow_can(order, 'deliver') %}
+                        <a href="{{ path('order_deliver', {id: order.id}) }}"
+                           class="btn btn-outline-dark btn-sm">Délivrée</a>
+                    {% endif %}
                     <table class="mt-4 table table-striped mb-0 table-sm">
                         <thead>
                         <tr class="table-secondary">
@@ -62,7 +82,7 @@
                     </table>
                 </div>
             </div>
-            <div class="row align-items-center">
+            <div class="row align-items-center mb-4">
                 <a href="javascript: window.history.back()" class="btn btn-sm btn-outline-info float-right">Retour</a>
             </div>
         </div>
