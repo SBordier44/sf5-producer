@@ -30,6 +30,4 @@ class HomeController extends AbstractController
             $params
         );
     }
-
-
 }
