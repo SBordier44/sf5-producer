@@ -53,7 +53,7 @@ jobs:
                     GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} yarn build
             -   name: Prepare database
                 run: |
-                    export DATABASE_URL="postgresql://symfony:ChangeMe@postgres:5432/app?serverVersion=13&charset=utf8"
+                    export DATABASE_URL="postgresql://symfony:postgres@postgres:5432/app?serverVersion=13&charset=utf8"
                     php bin/console doctrine:database:create
                     php bin/console doctrine:schema:update --force
                     php bin/console doctrine:fixtures:load -n
