@@ -54,9 +54,9 @@ jobs:
           GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} yarn build
       - name: Prepare database
         run: |
-          php bin/console doctrine:database:create
-          php bin/console doctrine:schema:update --force
-          php bin/console doctrine:fixtures:load -n
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:schema:update -f --env=test
+          php bin/console doctrine:fixtures:load -n --env=test
       - name: Run functional tests
         run: GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} php vendor/bin/simple-phpunit
       - name: Analyze coding style
