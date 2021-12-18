@@ -11,12 +11,14 @@ jobs:
                 php-versions: [ '8.0' ]
                 node-version: [ '17.0' ]
         services:
-            mysql:
-                image: mysql:8.0
+            postgres:
+                image: postgres:13-alpine
                 env:
-                    MYSQL_ROOT_PASSWORD: root
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: app
+                    POSTGRES_USER: symfony
                 ports:
-                    - 3306:3306
+                    - 5432:5432
         steps:
             -   name: Checkout
                 uses: actions/checkout@v2
@@ -51,6 +53,7 @@ jobs:
                     GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} yarn build
             -   name: Prepare database
                 run: |
+                    export DATABASE_URL="postgresql://symfony:ChangeMe@postgres:5432/app?serverVersion=13&charset=utf8"
                     php bin/console doctrine:database:create
                     php bin/console doctrine:schema:update --force
                     php bin/console doctrine:fixtures:load -n
