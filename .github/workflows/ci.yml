@@ -45,7 +45,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
       - name: Install Composer dependencies
         run: |
-          cp .env.sample .env
+          cp .env.test .env
           GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} composer install
       - name: Install NPM dependencies
         run: |
