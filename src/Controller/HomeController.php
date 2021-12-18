@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Producer;
 use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,13 +19,15 @@ class HomeController extends AbstractController
     ): Response {
         $params = [];
 
-        if ($this->getUser() && $this->getUser()::ROLE === Producer::ROLE) {
+        /** @var null|Customer|Producer $user */
+        $user = $this->getUser();
+
+        if ($user && $user::ROLE === Producer::ROLE) {
             $params = [
                 'orders' => $orderRepository->getOrdersWaitValidationForProducer(
-                    $this->getUser()
+                    $user
                 )
             ];
-            dump($params['orders']);
         }
 
         return $this->render(

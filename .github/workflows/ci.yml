@@ -9,7 +9,7 @@ jobs:
             matrix:
                 operating-system: [ ubuntu-latest ]
                 php-versions: [ '8.0' ]
-                node-version: [ '16.2' ]
+                node-version: [ '17.0' ]
         services:
             mysql:
                 image: mysql:8.0

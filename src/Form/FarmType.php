@@ -11,24 +11,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class FarmType extends AbstractType
 {
+    public function __construct(private RequestStack $requestStack)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add(
-                'siret',
-                TextType::class,
-                [
-                    'label' => 'Numéro Siret de votre établissement',
-                    'label_attr' => [
-                        'class' => 'font-weight-bold'
-                    ],
-                    'empty_data' => ''
-                ]
-            )
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,
                 function (FormEvent $event): void {
@@ -38,20 +33,19 @@ class FarmType extends AbstractType
 
                     if ($farm->getId() !== null) {
                         $form
-                            ->add(
-                                'image',
-                                ImageType::class,
-                                [
-                                    'label' => false
-                                ]
-                            )
-                            ->add(
-                                'address',
-                                AddressType::class,
-                                [
-                                    'label' => false
-                                ]
-                            )
+                            ->add('address', FarmAddressType::class, [
+                                'label' => false
+                            ])
+                            ->add('siret', TextType::class, [
+                                'label' => "Numéro siret de l'établissement",
+                                'label_attr' => [
+                                    'class' => 'font-weight-bold'
+                                ],
+                                'mapped' => false,
+                                'required' => false,
+                                'disabled' => true,
+                                'data' => $this->requestStack->getSession()->get('stepOne')?->getSiret()
+                            ])
                             ->add(
                                 'description',
                                 TextareaType::class,
@@ -60,7 +54,9 @@ class FarmType extends AbstractType
                                     'label_attr' => [
                                         'class' => 'font-weight-bold'
                                     ],
-                                    'empty_data' => ''
+                                    'constraints' => [
+                                        new NotBlank()
+                                    ]
                                 ]
                             );
                     }

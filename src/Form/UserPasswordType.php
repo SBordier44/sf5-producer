@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\User;
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordRequirements;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 
 class UserPasswordType extends AbstractType
 {
@@ -26,7 +29,6 @@ class UserPasswordType extends AbstractType
                     'constraints' => [
                         new UserPassword(
                             [
-                                'groups' => 'password',
                                 'message' => 'Le mot de passe saisi n\'est pas celui utilisé actuellement.'
                             ]
                         )
@@ -48,6 +50,22 @@ class UserPasswordType extends AbstractType
                         'label_attr' => [
                             'class' => 'font-weight-bold'
                         ],
+                        'constraints' => [
+                            new NotBlank(),
+                            new PasswordRequirements(options: [
+                                'requireLetters' => true,
+                                'requireSpecialCharacter' => true,
+                                'requireNumbers' => true,
+                                'requireCaseDiff' => true,
+                                'minLength' => 8
+                            ]),
+                            new NotCompromisedPassword(
+                                message: 'Ce mot de passe a été divulgué lors d\'une fuite de 
+                                données sur un autre site, il ne doit plus être utilisé. 
+                                Veuillez utiliser un autre mot de passe.',
+                                skipOnError: true
+                            )
+                        ]
                     ],
                     'second_options' => [
                         'label' => 'Nouveau mot de passe (Confirmation)',
@@ -64,8 +82,7 @@ class UserPasswordType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => User::class,
-                'validation_groups' => 'password'
+                'data_class' => User::class
             ]
         );
     }

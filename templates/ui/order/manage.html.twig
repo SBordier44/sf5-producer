@@ -19,6 +19,7 @@
                     <table class="table table-striped mb-0">
                         <thead>
                         <tr>
+                            <th class="text-center">N° Commande</th>
                             <th class="text-center">Date</th>
                             <th class="text-center">Nombre de produits</th>
                             <th class="text-center">Total TTC</th>
@@ -29,6 +30,11 @@
                         <tbody>
                         {% for order in orders %}
                             <tr>
+                                <td class="text-center font-weight-bold">
+                                    <a href="{{ path('order_show', {orderReference: order.orderReference}) }}">
+                                        {{ order.orderReference }}
+                                    </a>
+                                </td>
                                 <td class="text-center">{{ order.createdAt|date('d/m/Y') }}</td>
                                 <td class="text-center">{{ order.numberOfProducts }}</td>
                                 <td class="text-center">{{ order.totalIncludingTaxes|format_currency('EUR') }}</td>

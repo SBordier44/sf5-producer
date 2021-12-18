@@ -4,204 +4,123 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Validator\SiretValid;
+use App\EntityListener\FarmListener;
+use App\Repository\FarmRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * Class Farm
- * @package App\Entity
- * @ORM\Entity(repositoryClass="App\Repository\FarmRepository")
- * @ORM\EntityListeners({"App\EntityListener\FarmListener"})
- */
+#[ORM\Entity(repositoryClass: FarmRepository::class)]
+#[ORM\EntityListeners([FarmListener::class])]
+#[UniqueEntity(
+    fields: ['siret'],
+    message: 'Ce numéro siret est déjà enregistré chez nous.',
+    entityClass: Farm::class,
+    errorPath: 'siret'
+)]
 class Farm
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="uuid")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     * @Groups({"read"})
-     */
-    private ?UuidInterface $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[Groups(['json_read'])]
+    private ?Uuid $id;
 
-    /**
-     * @ORM\Column()
-     * @Groups({"read"})
-     */
-    private string $name = '';
+    #[ORM\Column(type: Types::STRING)]
+    #[Groups(['json_read'])]
+    private ?string $name = null;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", unique=true, length=14)
-     * @Assert\NotBlank
-     * @SiretValid()
-     */
-    private string $siret = '';
+    #[ORM\Column(type: Types::STRING, length: 14, unique: true)]
+    private ?string $siret = null;
 
-    /**
-     * @ORM\Column(nullable=true, type="text")
-     * @Assert\NotBlank(groups={"edit"})
-     */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['json_read'])]
     private ?string $description = null;
 
-    /**
-     * @ORM\Column(unique=true)
-     * @Groups({"read"})
-     */
-    private string $slug;
+    #[ORM\Column(type: Types::STRING, unique: true)]
+    #[Groups(['json_read'])]
+    private ?string $slug = null;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Producer", mappedBy="farm")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private Producer $producer;
+    #[ORM\OneToOne(mappedBy: 'farm', targetEntity: Producer::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private ?Producer $producer = null;
 
-    /**
-     * @ORM\Embedded(class="App\Entity\Address")
-     * @Assert\Valid(groups={"edit"})
-     * @Groups({"read"})
-     */
+    #[ORM\Embedded(class: Address::class)]
+    #[Groups(['json_read'])]
     private ?Address $address = null;
 
-    /**
-     * @ORM\Embedded(class="Image")
-     * @Assert\Valid(groups={"edit"})
-     */
-    private Image $image;
+    public function __construct()
+    {
+        $this->id = Uuid::v4();
+    }
 
-    /**
-     * @return Address|null
-     */
     public function getAddress(): ?Address
     {
         return $this->address;
     }
 
-    /**
-     * @param Address|null $address
-     * @return Farm
-     */
     public function setAddress(?Address $address): Farm
     {
         $this->address = $address;
         return $this;
     }
 
-    /**
-     * @return UuidInterface|null
-     */
-    public function getId(): ?UuidInterface
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return Farm
-     */
-    public function setName(string $name): Farm
+    public function setName(?string $name): Farm
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return Producer
-     */
-    public function getProducer(): Producer
+    public function getProducer(): ?Producer
     {
         return $this->producer;
     }
 
-    /**
-     * @param Producer $producer
-     * @return Farm
-     */
-    public function setProducer(Producer $producer): Farm
+    public function setProducer(?Producer $producer): Farm
     {
         $this->producer = $producer;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $description
-     * @return Farm
-     */
     public function setDescription(?string $description): Farm
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @return Image
-     */
-    public function getImage(): Image
-    {
-        return $this->image;
-    }
-
-    /**
-     * @param Image $image
-     * @return Farm
-     */
-    public function setImage(Image $image): Farm
-    {
-        $this->image = $image;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     * @return Farm
-     */
-    public function setSlug(string $slug): Farm
+    public function setSlug(?string $slug): Farm
     {
         $this->slug = $slug;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSiret(): string
+    public function getSiret(): ?string
     {
         return $this->siret;
     }
 
-    /**
-     * @param string $siret
-     * @return Farm
-     */
-    public function setSiret(string $siret): Farm
+    public function setSiret(?string $siret): Farm
     {
         $this->siret = $siret;
         return $this;

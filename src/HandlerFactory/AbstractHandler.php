@@ -12,22 +12,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractHandler implements HandlerInterface
 {
-    private FormFactoryInterface $formFactory;
-
     private FormInterface $form;
 
-    public function setFormFactory(FormFactoryInterface $formFactory): void
+    public function __construct(private FormFactoryInterface $formFactory)
     {
-        $this->formFactory = $formFactory;
     }
 
-    abstract protected function process($data, array $options): void;
+    abstract protected function process(mixed $data, array $options): void;
 
     protected function configure(OptionsResolver $resolver): void
     {
     }
 
-    public function handle(Request $request, $data = null, array $options = []): bool
+    public function handle(Request $request, mixed $data = null, array $options = []): bool
     {
         $resolver = new OptionsResolver();
 

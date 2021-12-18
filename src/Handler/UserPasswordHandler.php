@@ -8,47 +8,31 @@ use App\Entity\User;
 use App\Form\UserPasswordType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/**
- * Class UserPasswordHandler
- * @package App\Handler
- */
 class UserPasswordHandler extends AbstractHandler
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-    /**
-     * @var FlashBagInterface
-     */
-    private FlashBagInterface $flashBag;
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private UserPasswordEncoderInterface $passwordEncoder;
-
+    #[Pure]
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FlashBagInterface $flashBag,
-        UserPasswordEncoderInterface $passwordEncoder,
-        ContainerInterface $container
+        private EntityManagerInterface $entityManager,
+        private FlashBagInterface $flashBag,
+        private UserPasswordHasherInterface $passwordHasher,
+        FormFactoryInterface $formFactory
     ) {
-        $this->entityManager = $entityManager;
-        $this->flashBag = $flashBag;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->setFormFactory($container->get('form.factory'));
+        parent::__construct($formFactory);
     }
 
     protected function process($data, array $options): void
     {
         /** @var User $data */
-        $data->setPassword($this->passwordEncoder->encodePassword($data, $data->getPlainPassword()));
+        $data->setPassword($this->passwordHasher->hashPassword($data, $data->getPlainPassword()));
+
         $this->entityManager->flush();
+
         $this->flashBag->add('success', 'Votre mot de passe a été modifié avec succès.');
     }
 

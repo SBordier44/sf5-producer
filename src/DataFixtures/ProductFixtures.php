@@ -17,7 +17,7 @@ use Symfony\Component\Uid\Uuid;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $farms = $manager->getRepository(Farm::class)->findAll();
 
@@ -25,19 +25,24 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
         /** @var Farm $farm */
         foreach ($farms as $farm) {
-            for ($i = 1; $i <= 10; $i++) {
+            for ($i = 1; $i <= 100; $i++) {
                 $product = new Product();
                 $product->setFarm($farm);
                 $product->setName("Product " . $i);
                 $product->setDescription($faker->realText(50));
+
                 $price = new Price();
                 $price->setUnitPrice(random_int(100, 1000));
                 $price->setVat(2.1);
+
                 $product->setPrice($price);
                 $product->setQuantity(random_int(1, 20));
+
                 $image = new Image();
                 $image->setFile($this->createImage());
+
                 $product->setImage($image);
+
                 $manager->persist($product);
             }
         }
@@ -45,17 +50,11 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [UserFixtures::class];
     }
 
-    /**
-     * @return UploadedFile
-     */
     private function createImage(): UploadedFile
     {
         $filename = Uuid::v4() . '.png';

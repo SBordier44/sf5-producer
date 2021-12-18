@@ -31,3 +31,8 @@ process.env
 .php_cs.cache
 .idea
 .env
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

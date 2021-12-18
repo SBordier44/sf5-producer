@@ -9,6 +9,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class StockType extends AbstractType
 {
@@ -24,7 +26,11 @@ class StockType extends AbstractType
                         'class' => 'font-weight-bold'
                     ],
                     'required' => true,
-                    'empty_data' => 1
+                    'empty_data' => 1,
+                    'constraints' => [
+                        new NotBlank(),
+                        new GreaterThanOrEqual(value: 0)
+                    ]
                 ]
             );
     }

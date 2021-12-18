@@ -13,16 +13,9 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * Class OrderFixtures
- * @package App\DataFixtures
- */
 class OrderFixtures extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @param ObjectManager $manager
-     */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $states = [
             'created',
@@ -35,6 +28,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         $customers = $manager->getRepository(Customer::class)->findAll();
+
         $farms = $manager->getRepository(Farm::class)->findAll();
 
         /** @var Customer $customer */
@@ -60,20 +54,21 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                             ->setQuantity(random_int(1, 5))
                             ->setProduct($product)
                             ->setPrice($product->getPrice());
+
                         $order->getLines()->add($line);
                     }
+
                     $order->setState($state);
+
                     $manager->persist($order);
+
                     $manager->flush();
                 }
             }
         }
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [UserFixtures::class, ProductFixtures::class];
     }

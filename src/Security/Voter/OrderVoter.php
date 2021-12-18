@@ -10,7 +10,6 @@ use App\Entity\Producer;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class OrderVoter extends Voter
@@ -54,8 +53,7 @@ class OrderVoter extends Voter
         /** @var Order $subject */
         switch ($attribute) {
             case self::CANCEL:
-                return $user instanceof Customer
-                    && $user === $subject->getCustomer()
+                return $user === $subject->getCustomer()
                     && $this->orderStateMachine->can($subject, self::CANCEL);
 
             case self::REFUSE:
@@ -84,11 +82,11 @@ class OrderVoter extends Voter
                     && $this->orderStateMachine->can($subject, self::DELIVER);
 
             case self::PRODUCER_VIEW:
-                if ($user && $user instanceof Customer) {
+                if ($user instanceof Customer) {
                     return $user->getId() === $subject->getCustomer()->getId();
                 }
 
-                if ($user && $user instanceof Producer) {
+                if ($user instanceof Producer) {
                     return $user->getId() === $subject->getFarm()->getProducer()->getId();
                 }
 

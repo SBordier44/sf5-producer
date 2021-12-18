@@ -7,12 +7,7 @@ class User {
 	{field} email: string
 	{field} password: string
 	{field} registeredAt: DateTimeImmutable
-	{field} forgottenPassword: ?ForgottenPassword
-}
-
-class ForgottenPassword {
-	{field} token: string
-	{field} sentAt: DateTimeImmutable
+	{field} isValidated: boolean
 }
 
 class Producer {

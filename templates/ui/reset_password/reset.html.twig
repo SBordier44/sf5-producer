@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe perdu{{ parent() }}{% endblock %}
+
+{% block body %}
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h3 class="h3 text-uppercase mb-0 text-center section-title">Réinitialisation du mot de passe</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-6 my-auto mx-auto">
+                    {{ form_start(resetForm) }}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                    <div class="form-group">
+                        {{ form_row(resetForm.plainPassword) }}
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-outline-dark float-right">Enregistrer mon nouveau mot de
+                        passe
+                    </button>
+                    {{ form_end(resetForm) }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

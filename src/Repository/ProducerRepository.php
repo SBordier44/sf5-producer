@@ -9,9 +9,11 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Class ProducerRepository
- * @package App\Repository
- * @method findOneByEmail(string $email): ?Producer
+ * @method Producer|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Producer|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Producer|null findOneByEmail(string $email)
+ * @method Producer[]    findAll()
+ * @method Producer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProducerRepository extends ServiceEntityRepository
 {

@@ -8,53 +8,23 @@ use App\Entity\Farm;
 use App\Form\FarmType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * Class UpdateFarmHandler
- * @package App\Handler
- */
 class UpdateFarmHandler extends AbstractHandler
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-    /**
-     * @var FlashBagInterface
-     */
-    private FlashBagInterface $flashBag;
-    /**
-     * @var HttpClientInterface
-     */
-    private HttpClientInterface $httpClient;
-    /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-    /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $parameterBag;
-
+    #[Pure]
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FlashBagInterface $flashBag,
-        ContainerInterface $container,
-        HttpClientInterface $httpClient,
-        ParameterBagInterface $parameterBag
+        private EntityManagerInterface $entityManager,
+        private FlashBagInterface $flashBag,
+        FormFactoryInterface $formFactory,
+        private HttpClientInterface $httpClient,
     ) {
-        $this->entityManager = $entityManager;
-        $this->flashBag = $flashBag;
-        $this->setFormFactory($container->get('form.factory'));
-        $this->httpClient = $httpClient;
-        $this->container = $container;
-        $this->parameterBag = $parameterBag;
+        parent::__construct($formFactory);
     }
 
     protected function process($data, array $options): void
@@ -68,6 +38,7 @@ class UpdateFarmHandler extends AbstractHandler
         $data->setName($siretData['enseigne_1'] ?? $siretData['unite_legale']['denomination']);
 
         $this->entityManager->flush();
+
         $this->flashBag->add('success', 'Les informations de votre exploitation ont étés modifiées avec succès.');
     }
 
@@ -76,12 +47,7 @@ class UpdateFarmHandler extends AbstractHandler
         $resolver->setDefaults(
             [
                 'form_type' => FarmType::class,
-                'form_options' => [
-                    'validation_groups' => [
-                        'Default',
-                        'edit'
-                    ]
-                ]
+
             ]
         );
     }

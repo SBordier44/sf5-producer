@@ -5,14 +5,22 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\EmailNotExists;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserInfoType extends AbstractType
 {
+    public function __construct(private Security $security)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -24,7 +32,9 @@ class UserInfoType extends AbstractType
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
-                    'empty_data' => ''
+                    'constraints' => [
+                        new NotBlank()
+                    ]
                 ]
             )
             ->add(
@@ -35,7 +45,9 @@ class UserInfoType extends AbstractType
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
-                    'empty_data' => ''
+                    'constraints' => [
+                        new NotBlank()
+                    ]
                 ]
             )
             ->add(
@@ -46,7 +58,11 @@ class UserInfoType extends AbstractType
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
-                    'empty_data' => ''
+                    'constraints' => [
+                        new NotBlank(),
+                        new Email(mode: 'strict'),
+                        new EmailNotExists(except: $this->security->getUser()->getEmail())
+                    ]
                 ]
             );
     }

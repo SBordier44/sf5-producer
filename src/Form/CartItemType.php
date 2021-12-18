@@ -9,6 +9,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CartItemType extends AbstractType
 {
@@ -16,11 +18,15 @@ class CartItemType extends AbstractType
     {
         $builder->add('quantity', NumberType::class, [
             'html5' => false,
-            'empty_data' => 1,
+            'empty_data' => 0,
             'required' => true,
             'label' => false,
             'attr' => [
                 'class' => 'form-control-sm border-0 shadow-0 p-0 input-qty'
+            ],
+            'constraints' => [
+                new NotBlank(),
+                new GreaterThanOrEqual(value: 0)
             ]
         ]);
     }

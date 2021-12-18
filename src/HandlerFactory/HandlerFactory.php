@@ -6,20 +6,10 @@ namespace App\HandlerFactory;
 
 use Psr\Container\ContainerInterface;
 
-/**
- * Class HandlerFactory
- * @package App\HandlerFactory
- */
 class HandlerFactory implements HandlerFactoryInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
+    public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     public function createHandler(string $handler): HandlerInterface

@@ -1,6 +1,6 @@
 producers:
   - name: 'Manger Bio 44'
-    siret: 51171732400012
+    siret: '51171732400012'
     address: '58 Boulevard Gustave Roch'
     city: 'Nantes'
     postalCode: '44200'
@@ -11,7 +11,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'Au fil des saisons'
-    siret: 51857397700015
+    siret: '51857397700015'
     address: '7 ter rue Saint-Julien'
     city: 'Bouvron'
     postalCode: '44130'
@@ -22,7 +22,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'GAEC DUREAU'
-    siret: 82417079900012
+    siret: '82417079900012'
     address: '203 RUE DES FONTENELLES, LA PRIÈRE, ARTHON-EN-RETZ'
     city: 'CHAUMES-EN-RETZ'
     postalCode: '44320'
@@ -33,7 +33,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'Graines de Bio'
-    siret: 84829997000014
+    siret: '84829997000014'
     address: '5 Place du Champ de foire'
     city: 'Nort-sur-Erdre'
     postalCode: '44390'
@@ -44,7 +44,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'Le Wagon'
-    siret: 43903837300015
+    siret: '43903837300015'
     address: 'Les Hauts Roseaux'
     city: 'Pannecé'
     postalCode: '44440'
@@ -55,7 +55,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'La Ferme de Chez Nous'
-    siret: 51045908400024
+    siret: '51045908400024'
     address: '2 Route de la Vendée'
     city: 'Mouzillon'
     postalCode: '44330'
@@ -66,7 +66,7 @@ producers:
     region: 'Loire-Atlantique, Pays de la Loire'
 
   - name: 'Les Fermiers Nantais'
-    siret: 80778337800019
+    siret: '80778337800019'
     address: '290 route de Vannes'
     city: 'Orvault'
     postalCode: '44700'

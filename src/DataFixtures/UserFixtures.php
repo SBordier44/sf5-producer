@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Address;
@@ -12,78 +14,91 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class UserFixtures extends Fixture
 {
-    private UserPasswordEncoderInterface $userPasswordEncoder;
     private Generator $faker;
-    /**
-     * @var mixed
-     */
-    private $producers;
+    private array $producers;
 
-    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder, KernelInterface $kernel)
+    public function __construct(private UserPasswordHasherInterface $passwordHasher, KernelInterface $kernel)
     {
-        $this->userPasswordEncoder = $userPasswordEncoder;
         $this->faker = Factory::create('fr_FR');
         $this->producers = Yaml::parseFile(
             $kernel->getProjectDir() . '/src/DataFixtures/datas/producers.yaml'
         )['producers'];
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $producerAddress = (object)$this->producers[0];
+
         $producer = (new Producer())
             ->setEmail('producer@email.com')
             ->setFirstName($this->faker->firstName)
             ->setLastName($this->faker->lastName)
+            ->setIsVerified(true)
             ->setRegisteredAt(new DateTimeImmutable());
-        $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, 'password'));
+
+        $producer->setPassword($this->passwordHasher->hashPassword($producer, 'password'));
+
         $producer->getFarm()
+            ->setDescription($this->faker->sentence())
             ->setName($producerAddress->name)
             ->setSiret($producerAddress->siret);
+
         $position = (new Position())
             ->setLongitude($producerAddress->lng)
             ->setLatitude($producerAddress->lat);
+
         $address = (new Address())
             ->setAddress($producerAddress->address)
             ->setCity($producerAddress->city)
             ->setZipCode($producerAddress->postalCode)
             ->setCountry($producerAddress->country)
             ->setPhone($producerAddress->phone)
-            ->setRegion($producerAddress->region)
             ->setPosition($position);
+
         $producer->getFarm()->setAddress($address);
+
         $manager->persist($producer);
+
         $manager->flush();
 
         for ($i = 1; $i <= 6; $i++) {
             $producerAddress = (object)$this->producers[$i];
+
             $producer = (new Producer())
                 ->setEmail('producer' . $i . '@email.com')
                 ->setFirstName($this->faker->firstName)
                 ->setLastName($this->faker->lastName)
+                ->setIsVerified($this->faker->boolean())
                 ->setRegisteredAt(new DateTimeImmutable());
-            $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, 'password'));
+
+            $producer->setPassword($this->passwordHasher->hashPassword($producer, 'password'));
+
             $producer->getFarm()
+                ->setDescription($this->faker->sentence())
                 ->setName($producerAddress->name)
                 ->setSiret($producerAddress->siret);
+
             $position = (new Position())
                 ->setLongitude($producerAddress->lng)
                 ->setLatitude($producerAddress->lat);
+
             $address = (new Address())
                 ->setAddress($producerAddress->address)
                 ->setCity($producerAddress->city)
                 ->setZipCode($producerAddress->postalCode)
                 ->setCountry($producerAddress->country)
                 ->setPhone($producerAddress->phone)
-                ->setRegion($producerAddress->region)
                 ->setPosition($position);
+
             $producer->getFarm()->setAddress($address);
+
             $manager->persist($producer);
+
             $manager->flush();
         }
 
@@ -91,9 +106,13 @@ class UserFixtures extends Fixture
             ->setEmail('customer@email.com')
             ->setFirstName($this->faker->firstName)
             ->setLastName($this->faker->lastName)
+            ->setIsVerified(true)
             ->setRegisteredAt(new DateTimeImmutable());
-        $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, 'password'));
+
+        $customer->setPassword($this->passwordHasher->hashPassword($customer, 'password'));
+
         $manager->persist($customer);
+
         $manager->flush();
 
         for ($i = 1; $i <= 3; $i++) {
@@ -101,9 +120,13 @@ class UserFixtures extends Fixture
                 ->setEmail("customer$i@email.com")
                 ->setFirstName($this->faker->firstName)
                 ->setLastName($this->faker->lastName)
+                ->setIsVerified($this->faker->boolean())
                 ->setRegisteredAt(new DateTimeImmutable());
-            $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, 'password'));
+
+            $customer->setPassword($this->passwordHasher->hashPassword($customer, 'password'));
+
             $manager->persist($customer);
+
             $manager->flush();
         }
     }

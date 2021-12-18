@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{{ parent() }}{% endblock %}
+
+{% block body %}
+    <section class="py-2 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-12">
+                    <h3 class="h3 text-uppercase mb-0 text-center section-title">Inscription</h3>
+                    <h6 class="h6 text-center text-muted">
+                        En tant que producteur
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-6 my-auto mx-auto">
+                    {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    {{ form_row(form.siret) }}
+                    {{ form_rest(form) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

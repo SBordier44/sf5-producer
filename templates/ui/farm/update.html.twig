@@ -21,33 +21,8 @@
                     <div class="mb-4">
                         <u>Dénomination :</u> <strong id="farm_name">{{ form.vars.data.name }}</strong>
                     </div>
-
                     {{ form_row(form.description) }}
-                    <div class="form-group">
-                        {{ form_label(form.address.address) }}
-                        {{ form_widget(form.address.address) }}
-                        <ul class="auto-complete"></ul>
-                        {{ form_errors(form.address.address) }}
-                    </div>
-                    {{ form_row(form.address.addressExtra) }}
-                    {{ form_row(form.address.zipCode) }}
-                    {{ form_row(form.address.city) }}
-                    {{ form_row(form.address.region) }}
-                    {{ form_row(form.address.country) }}
                     {{ form_row(form.address.phone) }}
-                    {{ form_row(form.image) }}
-                    {% if form.vars.data.image.path is not null %}
-                        <div class="mb-4">
-                            Image actuelle
-                            <a href="{{ asset(form.vars.data.image.path) }}" target="_blank">
-                                <img src="{{ asset(form.vars.data.image.path) }}" alt="" style="max-width: 30px;">
-                            </a>
-                            <a type="button" class="btn btn-outline-danger btn-remove-file btn-sm float-right"
-                               data-target="#farm_image_path">
-                                Supprimer l'image
-                            </a>
-                        </div>
-                    {% endif %}
                     <div class="align-items-center text-center">
                         <button class="btn btn-sm btn-primary text-center" type="submit">
                             Enregistrer les modifications

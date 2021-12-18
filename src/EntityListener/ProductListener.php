@@ -10,17 +10,11 @@ use Symfony\Component\Uid\Uuid;
 
 class ProductListener
 {
-    private Security $security;
-
-    private string $uploadWebDir;
-
-    private string $uploadAbsoluteDir;
-
-    public function __construct(Security $security, string $uploadWebDir, string $uploadAbsoluteDir)
-    {
-        $this->security = $security;
-        $this->uploadWebDir = $uploadWebDir;
-        $this->uploadAbsoluteDir = $uploadAbsoluteDir;
+    public function __construct(
+        private Security $security,
+        private string $uploadWebDir,
+        private string $uploadAbsoluteDir
+    ) {
     }
 
     public function prePersist(Product $product): void
@@ -28,7 +22,7 @@ class ProductListener
         $this->upload($product);
 
         if ($product->getFarm() !== null) {
-            return; // @codeCoverageIgnore
+            return;
         }
 
         if ($this->security->getUser()) {

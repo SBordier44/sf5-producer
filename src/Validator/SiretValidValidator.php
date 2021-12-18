@@ -13,22 +13,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SiretValidValidator extends ConstraintValidator
 {
-    /**
-     * @var FarmRepository
-     */
-    private FarmRepository $farmRepository;
-    /**
-     * @var HttpClientInterface
-     */
-    private HttpClientInterface $httpClient;
-
-    public function __construct(FarmRepository $farmRepository, HttpClientInterface $httpClient)
+    public function __construct(private FarmRepository $farmRepository, private HttpClientInterface $httpClient)
     {
-        $this->farmRepository = $farmRepository;
-        $this->httpClient = $httpClient;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         /* @var $constraint SiretValid */
 
@@ -54,7 +43,6 @@ class SiretValidValidator extends ConstraintValidator
                 sprintf('L\'établissement lié au Siret "%s" est déclaré comme fermé', $value)
             )
                 ->addViolation();
-            return;
         }
     }
 }

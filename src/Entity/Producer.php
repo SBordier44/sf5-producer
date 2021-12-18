@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Repository\ProducerRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Class Producer
- * @package App\Entity
- * @ORM\Entity(repositoryClass="App\Repository\ProducerRepository")
- */
+#[ORM\Entity(repositoryClass: ProducerRepository::class)]
 class Producer extends User
 {
     public const ROLE = 'producer';
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Farm", cascade={"persist"}, inversedBy="producer")
-     * @Assert\Valid
-     */
+    #[ORM\OneToOne(inversedBy: 'producer', targetEntity: Farm::class, cascade: ['persist'])]
     private Farm $farm;
 
     public function __construct()
@@ -30,21 +23,14 @@ class Producer extends User
 
     public function getRoles(): array
     {
-        return ['ROLE_PRODUCER'];
+        return ['ROLE_PRODUCER', 'ROLE_USER'];
     }
 
-    /**
-     * @return Farm
-     */
     public function getFarm(): Farm
     {
         return $this->farm;
     }
 
-    /**
-     * @param Farm $farm
-     * @return Producer
-     */
     public function setFarm(Farm $farm): Producer
     {
         $this->farm = $farm;

@@ -10,16 +10,13 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class EmailExistsValidator extends ConstraintValidator
 {
-    private UserRepository $userRepository;
-
-    public function __construct(UserRepository $userRepository)
+    public function __construct(private UserRepository $userRepository)
     {
-        $this->userRepository = $userRepository;
     }
 
     public function validate($value, Constraint $constraint): void
     {
-        if ($value === null || $value === '' || $this->userRepository->count(['email' => $value]) > 0) {
+        if ($this->userRepository->count(['email' => $value]) > 0) {
             return;
         }
 

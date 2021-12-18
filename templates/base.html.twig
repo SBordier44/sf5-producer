@@ -6,6 +6,7 @@
     <title>{% block title %} - {{ site_name }}{% endblock %}</title>
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
+        <link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}" />
     {% endblock %}
 </head>
 <body>
@@ -54,11 +55,11 @@
                                 </a>
                                 <div class="dropdown-menu mt-3" aria-labelledby="registerDropdown">
                                     <a class="dropdown-item border-0 transition-link"
-                                       href="{{ path('security_registration', {role: 'customer'}) }}">
+                                       href="{{ path('security_register') }}">
                                         <i class="fas fa-user mr-2"></i>En tant que consommateur
                                     </a>
                                     <a class="dropdown-item border-0 transition-link"
-                                       href="{{ path('security_registration', {role: 'producer'}) }}">
+                                       href="{{ path('security_registration_producer_step_one') }}">
                                         <i class="fas fa-user-tie mr-2"></i>En tant que producteur
                                     </a>
                                 </div>
@@ -94,11 +95,11 @@
                                     {% endif %}
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item border-0 transition-link"
-                                       href="{{ path('user_edit_info') }}">
+                                       href="{{ path('account_edit_informations') }}">
                                         <i class="fas fa-user-circle mr-2"></i>Mes Informations
                                     </a>
                                     <a class="dropdown-item border-0 transition-link"
-                                       href="{{ path('user_edit_password') }}">
+                                       href="{{ path('account_edit_password') }}">
                                         <i class="fas fa-user-shield mr-2"></i>Mon Mot de passe
                                     </a>
                                     <div class="dropdown-divider"></div>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,15 +20,15 @@ class UserTest extends WebTestCase
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_password'));
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('account_edit_password'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $form = $crawler->filter('form[name=user_password]')->form(
             [
                 'user_password[currentPassword]' => 'password',
-                'user_password[plainPassword][first]' => 'password1234',
-                'user_password[plainPassword][second]' => 'password1234'
+                'user_password[plainPassword][first]' => 'superPASS@123',
+                'user_password[plainPassword][second]' => 'superPASS@123'
             ]
         );
 
@@ -38,16 +40,16 @@ class UserTest extends WebTestCase
     /**
      * @dataProvider provideBadRequestsPasswordEdit
      * @param array $formData
-     * @param string $errorMessage
+     * @param array $errorMessages
      */
-    public function testBadRequestEditPassword(array $formData, string $errorMessage): void
+    public function testBadRequestEditPassword(array $formData, array $errorMessages): void
     {
         $client = static::createAuthenticatedClient('customer@email.com');
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_password'));
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('account_edit_password'));
 
         $form = $crawler->filter('form[name=user_password]')->form($formData);
 
@@ -55,7 +57,9 @@ class UserTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        self::assertSelectorTextContains('span.form-error-message', $errorMessage);
+        foreach ($errorMessages as $errorMessage) {
+            self::assertSelectorTextContains('span.invalid-feedback', $errorMessage);
+        }
     }
 
     public function testRedirectToLoginIfUserIsNotLoggedForPasswordEdit(): void
@@ -65,7 +69,7 @@ class UserTest extends WebTestCase
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $client->request(Request::METHOD_GET, $router->generate('user_edit_password'));
+        $client->request(Request::METHOD_GET, $router->generate('account_edit_password'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
@@ -79,10 +83,10 @@ class UserTest extends WebTestCase
         yield [
             [
                 'user_password[currentPassword]' => 'fail',
-                'user_password[plainPassword][first]' => 'password1234',
-                'user_password[plainPassword][second]' => 'password1234'
+                'user_password[plainPassword][first]' => 'superPASS@123',
+                'user_password[plainPassword][second]' => 'superPASS@123'
             ],
-            'Le mot de passe saisi n\'est pas celui utilisé actuellement.'
+            ['Le mot de passe saisi n\'est pas celui utilisé actuellement.']
         ];
         yield [
             [
@@ -90,23 +94,20 @@ class UserTest extends WebTestCase
                 'user_password[plainPassword][first]' => 'password1234',
                 'user_password[plainPassword][second]' => 'fail'
             ],
-            'Les mots de passe ne correspondent pas.'
+            ['Les mots de passe ne correspondent pas.']
         ];
         yield [
             [
                 'user_password[currentPassword]' => 'password',
                 'user_password[plainPassword][first]' => 'fail',
-                'user_password[plainPassword][second]' => 'password1234'
+                'user_password[plainPassword][second]' => 'fail'
             ],
-            'Les mots de passe ne correspondent pas.'
-        ];
-        yield [
             [
-                'user_password[currentPassword]' => '',
-                'user_password[plainPassword][first]' => 'fail',
-                'user_password[plainPassword][second]' => 'password1234'
-            ],
-            'Le mot de passe saisi n\'est pas celui utilisé actuellement.'
+                'Le mot de passe doit faire au moins 8 caractères.',
+                'Le mot de passe doit contenir des majuscules et des minuscules.',
+                'Le mot de passe doit contenir au moins un chiffre.',
+                'Le mot de passe doit contenir au moins un caractère spécial.'
+            ]
         ];
     }
 
@@ -117,7 +118,7 @@ class UserTest extends WebTestCase
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('account_edit_informations'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
@@ -136,8 +137,6 @@ class UserTest extends WebTestCase
 
     /**
      * @dataProvider provideBadRequestsUserInfo
-     * @param array $formData
-     * @param string $errorMessage
      */
     public function testBadRequestEditInfo(array $formData, string $errorMessage): void
     {
@@ -146,7 +145,7 @@ class UserTest extends WebTestCase
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('account_edit_informations'));
 
         $form = $crawler->filter('form[name=user_info]')->form($formData);
 
@@ -164,7 +163,7 @@ class UserTest extends WebTestCase
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get('router');
 
-        $client->request(Request::METHOD_GET, $router->generate('user_edit_info'));
+        $client->request(Request::METHOD_GET, $router->generate('account_edit_informations'));
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 

@@ -14,11 +14,12 @@
     </section>
     <section>
         <div class="container">
-            {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
+            {% if is_granted('IS_AUTHENTICATED_FULLY') and app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
                 <div class="alert alert-secondary">
                     Vous avez une commande en cours dans votre panier pour le producteur
                     <strong>{{ app.user.cart.first.product.farm.name }}</strong>. <br>
-                    Si vous souhaitez commander des produits chez ce producteur, veuillez terminer la commande en cours
+                    Si vous souhaitez commander des produits chez ce producteur, veuillez terminer la commande en
+                    cours
                     ou vider
                     votre panier.
                 </div>
@@ -69,7 +70,7 @@
                                                     {{ product.description|nl2br }}
                                                 </p>
                                                 <div class="row mb-4">
-                                                    {% if app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
+                                                    {% if is_granted('IS_AUTHENTICATED_FULLY') and app.user.cart is not empty and app.user.cart.first.product.farm.id != farm.id %}
                                                         <div class="alert alert-secondary">
                                                             Vous avez une commande en cours dans votre panier pour le
                                                             producteur

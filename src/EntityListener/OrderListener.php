@@ -9,14 +9,8 @@ use App\Repository\OrderRepository;
 
 class OrderListener
 {
-    /**
-     * @var OrderRepository
-     */
-    private OrderRepository $orderRepository;
-
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(private OrderRepository $orderRepository)
     {
-        $this->orderRepository = $orderRepository;
     }
 
     public function prePersist(Order $order): void

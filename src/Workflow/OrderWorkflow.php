@@ -7,22 +7,25 @@ namespace App\Workflow;
 use App\Entity\Order;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
 class OrderWorkflow implements EventSubscriberInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
-    /** @codeCoverageIgnore  */
+    /** @codeCoverageIgnore */
+    #[ArrayShape([
+        'workflow.order.completed.cancel' => "string",
+        'workflow.order.completed.refuse' => "string",
+        'workflow.order.completed.accept' => "string",
+        'workflow.order.completed.process' => "string",
+        'workflow.order.completed.ready' => "string",
+        'workflow.order.completed.deliver' => "string"
+    ])]
     public static function getSubscribedEvents(): array
     {
         return [

@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use App\Entity\Farm;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Uid\Uuid;
 
 class FarmTest extends WebTestCase
 {
@@ -105,22 +105,10 @@ class FarmTest extends WebTestCase
             $router->generate('farm_update')
         );
 
-        $image = $this->createImage();
-
         $form = $crawler->filter('form[name=farm]')->form(
             [
-                'farm[siret]' => '34237633200082',
                 'farm[description]' => 'Super Exploitation de nouvelle génération',
-                'farm[address][address]' => '25 Rue de la pelouse verte',
-                'farm[address][addressExtra]' => '',
-                'farm[address][zipCode]' => '75000',
-                'farm[address][city]' => 'Paris',
-                'farm[address][region]' => 'Ile de France, Haut de france',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0607080910',
-                'farm[address][position][latitude]' => '48.441049',
-                'farm[address][position][longitude]' => '1.546233',
-                'farm[image][file]' => $image
+                'farm[address][phone]' => '0607080910'
             ]
         );
 
@@ -128,7 +116,16 @@ class FarmTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        unlink(__DIR__ . '/../public/uploads/' . $image->getFilename());
+        $client->followRedirect();
+
+        self::assertRouteSame('farm_update');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains(
+            'div.alert.alert-success',
+            'Les informations de votre exploitation ont étés modifiées avec succès.'
+        );
     }
 
     public function testFailedGetFarmInfoIfUserIsNotLogged(): void
@@ -169,176 +166,17 @@ class FarmTest extends WebTestCase
     {
         yield [
             [
-                'farm[siret]' => '',
                 'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => '',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => '',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => '',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => '',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => '',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
                 'farm[address][phone]' => '',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => 7.5
             ],
             'Cette valeur ne doit pas être vide.'
         ];
         yield [
             [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => '',
-                'farm[address][position][longitude]' => 7.5
+                'farm[description]' => '',
+                'farm[address][phone]' => '0102030405'
             ],
             'Cette valeur ne doit pas être vide.'
         ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => '28000',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => ''
-            ],
-            'Cette valeur ne doit pas être vide.'
-        ];
-        yield [
-            [
-                'farm[siret]' => '34237633200082',
-                'farm[description]' => 'Description',
-                'farm[address][address]' => 'address',
-                'farm[address][zipCode]' => 'fail',
-                'farm[address][city]' => 'Chartres',
-                'farm[address][region]' => 'Touraine',
-                'farm[address][country]' => 'France',
-                'farm[address][phone]' => '0102030405',
-                'farm[address][position][latitude]' => 46.5,
-                'farm[address][position][longitude]' => ''
-            ],
-            'Code postal invalide.'
-        ];
-    }
-
-    private function createImage(): UploadedFile
-    {
-        $filename = Uuid::v4() . '.png';
-        $path = __DIR__ . '/../public/uploads/';
-        copy($path . 'TF300.png', $path . $filename);
-        return new UploadedFile($path . $filename, $filename, 'image/png', null, true);
     }
 }

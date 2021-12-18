@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\CartItem;
+use App\Entity\Customer;
 use App\Entity\Product;
 use App\Handler\CartHandler;
 use App\HandlerFactory\HandlerFactoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,30 +17,31 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class CartController
- * @package App\Controller
- * @IsGranted("ROLE_CUSTOMER")
- * @Route("/cart")
- */
+#[Route('/cart', name: 'cart_')]
+#[IsGranted('ROLE_CUSTOMER')]
 class CartController extends AbstractController
 {
-    /**
-     * @param Product $product
-     * @Route("/add/{id}", name="cart_add")
-     * @return RedirectResponse
-     * @IsGranted("add_to_cart", subject="product")
-     */
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
+
+    #[Route('/add/{id}', name: 'add')]
+    #[IsGranted('add_to_cart', subject: 'product')]
     public function add(Product $product): RedirectResponse
     {
+        /** @var Customer $customer */
+        $customer = $this->getUser();
+
         if ($product->getQuantity() === 0) {
             $this->addFlash(
                 'warning',
                 'Le produit sélectionné n\'est plus en stock et ne peut donc pas être ajouté à votre panier'
             );
         } else {
-            $this->getUser()->addToCart($product);
-            $this->getDoctrine()->getManager()->flush();
+            $customer->addToCart($product);
+
+            $this->em->flush();
+
             $this->addFlash('success', 'Le produit a bien été ajouté à votre panier');
         }
         return $this->redirectToRoute(
@@ -49,12 +52,8 @@ class CartController extends AbstractController
         );
     }
 
-    /**
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/", name="cart_index")
-     */
+    #[Route('/', name: 'index')]
+    #[IsGranted('ROLE_CUSTOMER')]
     public function index(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $handler = $handlerFactory->createHandler(CartHandler::class);
@@ -71,44 +70,48 @@ class CartController extends AbstractController
         );
     }
 
-    /**
-     * @param CartItem $cartItem
-     * @Route("/{id}/increase_quantity", name="cart_item_increase")
-     * @return RedirectResponse
-     */
+    #[Route('/{id}/increase_quantity', name: 'item_increase')]
+    #[IsGranted('ROLE_CUSTOMER')]
     public function increaseQuantity(CartItem $cartItem): RedirectResponse
     {
-        if ($cartItem->getQuantity() < 100) {
+        if ($cartItem->getQuantity() >= $cartItem->getProduct()->getQuantity()) {
+            $this->addFlash(
+                'warning',
+                "Il ne reste que {$cartItem->getProduct()->getQuantity()} 
+                articles pour ce produit. Je ne pouvez pas en ajouter d'avantage"
+            );
+        } elseif ($cartItem->getQuantity() < 100) {
             $cartItem->increaseQuantity();
-            $this->getDoctrine()->getManager()->flush();
+
+            $this->em->flush();
         }
+
         return $this->redirectToRoute('cart_index');
     }
 
-    /**
-     * @param CartItem $cartItem
-     * @Route("/{id}/decrease_quantity", name="cart_item_decrease")
-     * @return RedirectResponse
-     */
+    #[Route('/{id}/decrease_quantity', name: 'item_decrease')]
+    #[IsGranted('ROLE_CUSTOMER')]
     public function decreaseQuantity(CartItem $cartItem): RedirectResponse
     {
         if ($cartItem->getQuantity() > 0) {
             $cartItem->decreaseQuantity();
-            $this->getDoctrine()->getManager()->flush();
+
+            $this->em->flush();
         }
+
         return $this->redirectToRoute('cart_index');
     }
 
-    /**
-     * @param CartItem $cartItem
-     * @Route("/{id}/remove", name="cart_item_remove")
-     * @return RedirectResponse
-     */
+    #[Route('/{id}/remove', name: 'item_remove')]
+    #[IsGranted('ROLE_CUSTOMER')]
     public function removeItem(CartItem $cartItem): RedirectResponse
     {
-        $this->getDoctrine()->getManager()->remove($cartItem);
-        $this->getDoctrine()->getManager()->flush();
+        $this->em->remove($cartItem);
+
+        $this->em->flush();
+
         $this->addFlash('success', 'Produit retiré de votre panier avec succès.');
+
         return $this->redirectToRoute('cart_index');
     }
 }

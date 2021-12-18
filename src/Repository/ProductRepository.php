@@ -11,9 +11,12 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Class ProductRepository
- * @package App\Repository
- * @method findByFarm(Farm $farm): array<Product>
+ * @method Product|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Product|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Product|null findOneByFarm(Farm $farm)
+ * @method Product[]    findByFarm(Farm $farm)
+ * @method Product[]    findAll()
+ * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProductRepository extends ServiceEntityRepository
 {

@@ -4,201 +4,144 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\EntityListener\UserListener;
+use App\Repository\UserRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\UuidInterface;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * Class User
- * @package App\Entity
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"producer"="App\Entity\Producer", "customer"="App\Entity\Customer"})
- * @UniqueEntity(fields="email", message="Cette adresse email est déjà utilisée.", entityClass="App\Entity\User")
- */
-abstract class User implements UserInterface, \Serializable, EquatableInterface
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\EntityListeners([UserListener::class])]
+#[ORM\Table(name: '`user`')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['producer' => Producer::class, 'customer' => Customer::class])]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Cette adresse email est déjà utilisée.',
+    entityClass: User::class,
+    errorPath: 'email'
+)]
+abstract class User implements UserInterface, \Serializable, EquatableInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="uuid")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
-    protected UuidInterface $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $id;
 
-    /**
-     * @ORM\Column()
-     * @Assert\NotBlank()
-     */
-    protected string $firstName = '';
+    #[ORM\Column(type: Types::STRING)]
+    private ?string $firstName = null;
 
-    /**
-     * @ORM\Column()
-     * @Assert\NotBlank()
-     */
-    protected string $lastName = '';
+    #[ORM\Column(type: Types::STRING)]
+    private ?string $lastName = null;
 
-    /**
-     * @ORM\Column(unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
-     */
-    protected string $email = '';
+    #[ORM\Column(type: Types::STRING, unique: true)]
+    private ?string $email = null;
 
-    /**
-     * @Assert\NotBlank(groups={"password"})
-     * @Assert\Length(min=8, groups={"password"})
-     */
-    protected ?string $plainPassword = null;
+    private ?string $plainPassword = null;
 
-    /**
-     * @ORM\Column
-     */
-    protected string $password = '';
+    #[ORM\Column(type: Types::STRING)]
+    private ?string $password = null;
 
-    /**
-     * @ORM\Embedded(class="ForgottenPassword")
-     */
-    protected ?ForgottenPassword $forgottenPassword;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private DateTimeImmutable $registeredAt;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    protected DateTimeImmutable $registeredAt;
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isVerified = false;
 
     public function __construct()
     {
+        $this->id = Uuid::v4();
         $this->registeredAt = new DateTimeImmutable();
     }
 
-    /**
-     * @return UuidInterface
-     */
-    public function getId(): UuidInterface
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     * @return User
-     */
-    public function setFirstName(string $firstName): User
+    public function setFirstName(?string $firstName): User
     {
         $this->firstName = $firstName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     * @return User
-     */
-    public function setLastName(string $lastName): User
+    public function setLastName(?string $lastName): User
     {
         $this->lastName = $lastName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     * @return User
-     */
-    public function setEmail(string $email): User
+    public function setEmail(?string $email): User
     {
         $this->email = $email;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
 
-    /**
-     * @param string|null $plainPassword
-     * @return User
-     */
     public function setPlainPassword(?string $plainPassword): User
     {
         $this->plainPassword = $plainPassword;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string $password
-     * @return User
-     */
-    public function setPassword(string $password): User
+    public function setPassword(?string $password): User
     {
-        $this->forgottenPassword = null;
         $this->password = $password;
         return $this;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
-    public function getRegisteredAt(): DateTimeImmutable
+    public function getRegisteredAt(): ?DateTimeImmutable
     {
         return $this->registeredAt;
     }
 
-    /**
-     * @param DateTimeImmutable $registeredAt
-     * @return User
-     */
-    public function setRegisteredAt(DateTimeImmutable $registeredAt): User
+    public function setRegisteredAt(?DateTimeImmutable $registeredAt): User
     {
         $this->registeredAt = $registeredAt;
         return $this;
     }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
+        return null;
     }
 
-    public function getUsername(): string
+    public function getUsername(): ?string
+    {
+        return $this->email;
+    }
+
+    public function getUserIdentifier(): ?string
     {
         return $this->email;
     }
@@ -208,32 +151,23 @@ abstract class User implements UserInterface, \Serializable, EquatableInterface
         $this->plainPassword = null;
     }
 
-    public function hasForgotHisPassword(): void
+    public function getFullName(): ?string
     {
-        $this->forgottenPassword = new ForgottenPassword();
+        if ($this->firstName && $this->lastName) {
+            return sprintf('%s %s', $this->firstName, $this->lastName);
+        }
+        return null;
     }
 
-    public function getFullName(): string
+    public function setIsVerified(bool $isVerified): self
     {
-        return sprintf('%s %s', $this->firstName, $this->lastName);
-    }
-
-    /**
-     * @return ForgottenPassword|null
-     */
-    public function getForgottenPassword(): ?ForgottenPassword
-    {
-        return $this->forgottenPassword;
-    }
-
-    /**
-     * @param ForgottenPassword|null $forgottenPassword
-     * @return User
-     */
-    public function setForgottenPassword(?ForgottenPassword $forgottenPassword): User
-    {
-        $this->forgottenPassword = $forgottenPassword;
+        $this->isVerified = $isVerified;
         return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
     }
 
     public function serialize(): string
@@ -254,6 +188,7 @@ abstract class User implements UserInterface, \Serializable, EquatableInterface
         ] = unserialize($serialized, ['allowed_classes' => true]);
     }
 
+    #[Pure]
     public function isEqualTo(UserInterface $user): bool
     {
         return $user->getUsername() === $this->getUsername();

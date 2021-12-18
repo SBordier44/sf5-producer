@@ -8,28 +8,13 @@ use App\Entity\Farm;
 use App\Repository\FarmRepository;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Uid\Uuid;
 
 class FarmListener
 {
-    private string $uploadWebDir;
-
-    private string $uploadAbsoluteDir;
-
-    private SluggerInterface $slugger;
-
-    private FarmRepository $farmRepository;
-
     public function __construct(
-        SluggerInterface $slugger,
-        FarmRepository $farmRepository,
-        string $uploadWebDir,
-        string $uploadAbsoluteDir
+        private SluggerInterface $slugger,
+        private FarmRepository $farmRepository
     ) {
-        $this->uploadWebDir = $uploadWebDir;
-        $this->uploadAbsoluteDir = $uploadAbsoluteDir;
-        $this->slugger = $slugger;
-        $this->farmRepository = $farmRepository;
     }
 
     public function preUpdate(Farm $farm, PreUpdateEventArgs $args): void
@@ -37,21 +22,6 @@ class FarmListener
         if ($args->hasChangedField('name')) {
             $this->setSlug($farm);
         }
-
-        $this->upload($farm);
-    }
-
-    private function upload(Farm $farm): void
-    {
-        if ($farm->getImage() === null || $farm->getImage()->getFile() === null) {
-            return;
-        }
-
-        $filename = Uuid::v4() . '.' . $farm->getImage()->getFile()->getClientOriginalExtension();
-
-        $farm->getImage()->getFile()->move($this->uploadAbsoluteDir, $filename);
-
-        $farm->getImage()->setPath($this->uploadWebDir . $filename);
     }
 
     public function prePersist(Farm $farm): void

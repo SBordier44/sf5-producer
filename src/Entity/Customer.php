@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Class Customer
- * @package App\Entity
- * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
- */
+#[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer extends User
 {
     public const ROLE = 'customer';
 
-    /**
-     * @var Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\CartItem", mappedBy="customer", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CartItem::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $cart;
 
     public function __construct()
@@ -31,13 +25,10 @@ class Customer extends User
 
     public function getRoles(): array
     {
-        return ['ROLE_CUSTOMER'];
+        return ['ROLE_CUSTOMER', 'ROLE_USER'];
     }
 
-    /**
-     * @return Collection
-     */
-    public function getCart()
+    public function getCart(): Collection
     {
         return $this->cart;
     }

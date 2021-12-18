@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class MakerPass implements CompilerPassInterface
 {
-
     public function process(ContainerBuilder $container): void
     {
         $definition = $container->getDefinition(HandlerMaker::class);

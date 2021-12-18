@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Farm;
+use App\Entity\Producer;
 use App\Handler\UpdateFarmHandler;
 use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\FarmRepository;
@@ -17,54 +18,40 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * Class FarmController
- * @package App\Controller
- * @Route("/farm")
- */
+#[Route('/farm', name: 'farm_')]
 class FarmController extends AbstractController
 {
-    /**
-     * @param FarmRepository $farmRepository
-     * @param SerializerInterface $serializer
-     * @return JsonResponse
-     * @Route("/all", name="farm_all")
-     */
+    #[Route('/all', name: 'all')]
     public function all(FarmRepository $farmRepository, SerializerInterface $serializer): JsonResponse
     {
-        $farms = $serializer->serialize($farmRepository->findAll(), 'json', ['groups' => 'read']);
-        return new JsonResponse($farms, JsonResponse::HTTP_OK, [], true);
+        $farms = $serializer->serialize($farmRepository->findAll(), 'json', ['groups' => 'json_read']);
+
+        return new JsonResponse($farms, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * @param Farm $farm
-     * @param ProductRepository $productRepository
-     * @return Response
-     * @Route("/{slug}/show", name="farm_show")
-     * @IsGranted("ROLE_USER")
-     */
+    #[Route('/{slug}/show', name: 'show')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function show(Farm $farm, ProductRepository $productRepository): Response
     {
         return $this->render(
             'ui/farm/show.html.twig',
             [
                 'farm' => $farm,
-                'products' => $productRepository->findByFarm($farm)
+                'products' => $productRepository->findBy(['farm' => $farm])
             ]
         );
     }
 
-    /**
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/update", name="farm_update")
-     * @IsGranted("ROLE_PRODUCER")
-     */
+    #[Route('/update', name: 'update')]
+    #[IsGranted('ROLE_PRODUCER')]
     public function update(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
+        /** @var Producer $producer */
+        $producer = $this->getUser();
+
         $handler = $handlerFactory->createHandler(UpdateFarmHandler::class);
-        if ($handler->handle($request, $this->getUser()->getFarm())) {
+
+        if ($handler->handle($request, $producer->getFarm())) {
             return $this->redirectToRoute('farm_update');
         }
 

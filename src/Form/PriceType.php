@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PriceType extends AbstractType
 {
@@ -25,7 +27,11 @@ class PriceType extends AbstractType
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
-                    'empty_data' => 0
+                    'empty_data' => 0,
+                    'constraints' => [
+                        new NotBlank(),
+                        new GreaterThanOrEqual(value: 0)
+                    ]
                 ]
             )
             ->add(
@@ -43,6 +49,10 @@ class PriceType extends AbstractType
                     'label_attr' => [
                         'class' => 'font-weight-bold'
                     ],
+                    'preferred_choices' => [20.0],
+                    'constraints' => [
+                        new NotBlank()
+                    ]
                 ]
             );
     }

@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Farm;
+use App\Entity\Producer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Class FarmRepository
- * @package App\Repository
- * @method findByFarm(Farm $farm): array<Farm>
+ * @method Farm|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Farm|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Farm|null findOneByProducer(Producer $producer)
+ * @method Farm[]    findAll()
+ * @method Farm[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class FarmRepository extends ServiceEntityRepository
 {
@@ -24,12 +27,12 @@ class FarmRepository extends ServiceEntityRepository
     {
         $findSlugs = $this->createQueryBuilder('f')
             ->select('f.slug')
-            ->where('REGEXP(f.slug, :pattern) > 0')
-            ->setParameter('pattern', '^' . $slug)
+            ->where('lower(f.slug) like lower(:pattern)')
+            ->setParameter('pattern', $slug . '%')
             ->getQuery()
             ->getScalarResult();
 
-        if (count($findSlugs) === 0) {
+        if (!$findSlugs) {
             return $slug;
         }
 

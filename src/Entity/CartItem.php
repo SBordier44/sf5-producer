@@ -4,84 +4,56 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\UuidInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * Class CartItem
- * @package App\Entity
- * @ORM\Entity
- */
+#[ORM\Entity]
 class CartItem
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
-    private UuidInterface $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?Uuid $id;
 
-    /**
-     * @var int
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: Types::INTEGER)]
     private int $quantity = 0;
 
-    /**
-     * @var Product
-     * @ORM\ManyToOne(targetEntity="App\Entity\Product")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private Product $product;
+    #[ORM\ManyToOne(targetEntity: Product::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private ?Product $product = null;
 
-    /**
-     * @var Customer|null
-     * @ORM\ManyToOne(targetEntity="App\Entity\Customer", inversedBy="cart")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'cart')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Customer $customer = null;
 
-    /**
-     * @return UuidInterface
-     */
-    public function getId(): UuidInterface
+    public function __construct()
+    {
+        $this->id = Uuid::v4();
+    }
+
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    /**
-     * @return Customer
-     */
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param Customer $customer
-     * @return CartItem
-     */
-    public function setCustomer(Customer $customer): CartItem
+    public function setCustomer(?Customer $customer): CartItem
     {
         $this->customer = $customer;
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getQuantity(): int
+    public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    /**
-     * @param int $quantity
-     * @return CartItem
-     */
-    public function setQuantity(int $quantity): CartItem
+    public function setQuantity(?int $quantity): CartItem
     {
         $this->quantity = $quantity;
         if ($this->quantity <= 0) {
@@ -91,19 +63,12 @@ class CartItem
         return $this;
     }
 
-    /**
-     * @return Product
-     */
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    /**
-     * @param Product $product
-     * @return CartItem
-     */
-    public function setProduct(Product $product): CartItem
+    public function setProduct(?Product $product): CartItem
     {
         $this->product = $product;
         return $this;
@@ -119,18 +84,30 @@ class CartItem
         $this->quantity--;
     }
 
+    #[Pure]
     public function getPriceIncludingTaxes(): float
     {
-        return $this->product->getPriceIncludingTaxes() * $this->quantity;
+        if ($this->product) {
+            return $this->product->getPriceIncludingTaxes() * $this->quantity;
+        }
+        return 0.00;
     }
 
+    #[Pure]
     public function getTotalAmountTaxes(): float
     {
-        return $this->product->getTaxesAmount() * $this->quantity;
+        if ($this->product) {
+            return $this->product->getTaxesAmount() * $this->quantity;
+        }
+        return 0.00;
     }
 
+    #[Pure]
     public function getTotalAmountWithoutTaxes(): float
     {
-        return ($this->product->getPrice()->getUnitPrice() / 100) * $this->quantity;
+        if ($this->product && $this->product->getPrice()) {
+            return ($this->product->getPrice()->getUnitPrice() / 100) * $this->quantity;
+        }
+        return 0.00;
     }
 }

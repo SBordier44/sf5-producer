@@ -35,7 +35,16 @@ if ($('#map').length) {
             .then(farms => {
                 farms.forEach(farm => {
                     let marker = L.marker([farm.address.position.latitude, farm.address.position.longitude]).addTo(carte)
-                    marker.bindPopup('<p class="font-weight-bold">' + farm.name + '<br>' + farm.address.zipCode + ' ' + farm.address.city + '</p>')
+                    marker.bindPopup(
+                        '<p class="font-weight-bold">'
+                        + farm.name + ' - '
+                        + farm.address.zipCode
+                        + ' '
+                        + farm.address.city
+                        + '</p><p>'
+                        + farm.description
+                        + '</p>'
+                    )
                     marker.on('click', function (e) {
                         window.location.href = '/farm/' + farm.slug + '/show'
                     })

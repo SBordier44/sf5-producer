@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Producer;
 use App\Entity\Product;
+use App\Form\ProductType;
 use App\Handler\CreateProductHandler;
 use App\Handler\ProductStockUpdateHandler;
-use App\Handler\UpdateProductHandler;
 use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,30 +19,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class ProductController
- * @package App\Controller
- * @Route("/products")
- * @IsGranted("ROLE_PRODUCER")
- */
+#[Route('/product', name: 'product_')]
+#[IsGranted('ROLE_PRODUCER')]
 class ProductController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param ProductRepository $productRepository
-     * @param PaginatorInterface $paginator
-     * @return Response
-     * @Route("/", name="product_index")
-     */
+    #[Route('/', name: 'index')]
     public function index(
         Request $request,
         ProductRepository $productRepository,
         PaginatorInterface $paginator
     ): Response {
+        /** @var Producer $producer */
+        $producer = $this->getUser();
+
         $products = $paginator->paginate(
-            $productRepository->findByFarm($this->getUser()->getFarm()),
+            $productRepository->findByFarm($producer->getFarm()),
             $request->query->getInt('page', 1)
         );
+
         $products->setCustomParameters(
             [
                 'align' => 'center',
@@ -48,6 +44,7 @@ class ProductController extends AbstractController
                 'rounded' => true
             ]
         );
+
         return $this->render(
             'ui/product/index.html.twig',
             [
@@ -56,12 +53,7 @@ class ProductController extends AbstractController
         );
     }
 
-    /**
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/create", name="product_create")
-     */
+    #[Route('/create', name: 'create')]
     public function create(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $product = new Product();
@@ -80,38 +72,43 @@ class ProductController extends AbstractController
         );
     }
 
-    /**
-     * @param Product $product
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/{id}/update", name="product_update")
-     * @IsGranted("update", subject="product")
-     */
-    public function update(Product $product, Request $request, HandlerFactoryInterface $handlerFactory): Response
-    {
-        $handler = $handlerFactory->createHandler(UpdateProductHandler::class);
+    #[Route('/{id}/update', name: 'update')]
+    #[IsGranted('update', subject: 'product')]
+    public function update(
+        Product $product,
+        Request $request,
+        HandlerFactoryInterface $handlerFactory,
+        EntityManagerInterface $em
+    ): Response {
+        /*$handler = $handlerFactory->createHandler(UpdateProductHandler::class);
 
         if ($handler->handle($request, $product)) {
+            return $this->redirectToRoute('product_index');
+        }*/
+
+        $form = $this->createForm(ProductType::class, $product);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($product);
+            $em->flush();
+
+            $this->addFlash('success', 'Votre produit a été mis à jour avec succès.');
+
             return $this->redirectToRoute('product_index');
         }
 
         return $this->render(
             'ui/product/update.html.twig',
             [
-                'form' => $handler->createView()
+                'form' => $form->createView()
             ]
         );
     }
 
-    /**
-     * @param Product $product
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/{id}/stock", name="product_stock")
-     * @IsGranted("update", subject="product")
-     */
+    #[Route('/{id}/stock', name: 'stock')]
+    #[IsGranted('update', subject: 'product')]
     public function stock(Product $product, Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $handler = $handlerFactory->createHandler(ProductStockUpdateHandler::class);
@@ -128,17 +125,16 @@ class ProductController extends AbstractController
         );
     }
 
-    /**
-     * @param Product $product
-     * @return Response
-     * @Route("/{id}/delete", name="product_delete")
-     * @IsGranted("delete", subject="product")
-     */
-    public function delete(Product $product): Response
+    #[Route('/{id}/delete', name: 'delete')]
+    #[IsGranted('delete', subject: 'product')]
+    public function delete(Product $product, EntityManagerInterface $em): Response
     {
-        $this->getDoctrine()->getManager()->remove($product);
-        $this->getDoctrine()->getManager()->flush();
+        $em->remove($product);
+
+        $em->flush();
+
         $this->addFlash('success', 'Votre produit à été supprimé avec succès');
+
         return $this->redirectToRoute('product_index');
     }
 }

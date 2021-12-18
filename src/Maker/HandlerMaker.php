@@ -17,11 +17,13 @@ use Symfony\Component\Form\AbstractType;
 
 class HandlerMaker extends AbstractMaker
 {
-    private array $formTypes;
-
-    public function __construct(array $formTypes)
+    public function __construct(private array $formTypes)
     {
-        $this->formTypes = $formTypes;
+    }
+
+    public static function getCommandDescription(): string
+    {
+        return 'Creates form handler';
     }
 
     public static function getCommandName(): string

@@ -13,51 +13,38 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class UserController
- * @package App\Controller
- * @IsGranted("ROLE_USER")
- */
+#[Route('/account', name: 'account_')]
+#[IsGranted('ROLE_USER')]
 class UserController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/edit-password", name="user_edit_password")
-     */
+    #[Route('/edit-password', name: 'edit_password')]
     public function editPassword(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $handler = $handlerFactory->createHandler(UserPasswordHandler::class);
 
         if ($handler->handle($request, $this->getUser())) {
-            return $this->redirectToRoute('user_edit_password');
+            return $this->redirectToRoute('account_edit_password');
         }
 
         return $this->render(
-            'ui/user/edit_password.html.twig',
+            'ui/account/edit_password.html.twig',
             [
                 'form' => $handler->createView()
             ]
         );
     }
 
-    /**
-     * @param Request $request
-     * @param HandlerFactoryInterface $handlerFactory
-     * @return Response
-     * @Route("/edit-info", name="user_edit_info")
-     */
+    #[Route('/edit-informations', name: 'edit_informations')]
     public function editInfo(Request $request, HandlerFactoryInterface $handlerFactory): Response
     {
         $handler = $handlerFactory->createHandler(UserInfoHandler::class);
 
         if ($handler->handle($request, $this->getUser())) {
-            return $this->redirectToRoute('user_edit_info');
+            return $this->redirectToRoute('account_edit_informations');
         }
 
         return $this->render(
-            'ui/user/edit_info.html.twig',
+            'ui/account/edit_informations.html.twig',
             [
                 'form' => $handler->createView()
             ]

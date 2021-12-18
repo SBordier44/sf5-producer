@@ -4,64 +4,40 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Class Position
- * @package App\Entity
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 class Position
 {
-    /**
-     * @ORM\Column(type="decimal", precision=16, scale=13, nullable=true)
-     * @Assert\NotBlank(groups={"edit"})
-     * @Groups({"read"})
-     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 16, scale: 13, nullable: true)]
+    #[Groups(['json_read'])]
     private ?float $latitude = null;
 
-    /**
-     * @ORM\Column(type="decimal", precision=16, scale=13, nullable=true)
-     * @Assert\NotBlank(groups={"edit"})
-     * @Groups({"read"})
-     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 16, scale: 13, nullable: true)]
+    #[Groups(['json_read'])]
     private ?float $longitude = null;
 
-    /**
-     * @return float|null
-     */
     public function getLongitude(): ?float
     {
         return $this->longitude;
     }
 
-    /**
-     * @param float|string|null $longitude
-     * @return Position
-     */
-    public function setLongitude($longitude): Position
+    public function setLongitude(?float $longitude): Position
     {
-        $this->longitude = (float)$longitude;
+        $this->longitude = $longitude;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getLatitude(): ?float
     {
         return $this->latitude;
     }
 
-    /**
-     * @param float|string|null $latitude
-     * @return Position
-     */
-    public function setLatitude($latitude): Position
+    public function setLatitude(?float $latitude): Position
     {
-        $this->latitude = (float)$latitude;
+        $this->latitude = $latitude;
         return $this;
     }
 }

@@ -7,41 +7,28 @@ namespace App\Handler;
 use App\Form\ProductType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class CreateProductHandler
- * @package App\Handler
- */
 class CreateProductHandler extends AbstractHandler
 {
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-    /**
-     * @var FlashBagInterface
-     */
-    private FlashBagInterface $flashBag;
-
+    #[Pure]
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FlashBagInterface $flashBag,
-        ContainerInterface $container
+        private EntityManagerInterface $entityManager,
+        private FlashBagInterface $flashBag,
+        FormFactoryInterface $formFactory
     ) {
-        $this->entityManager = $entityManager;
-        $this->flashBag = $flashBag;
-        $this->setFormFactory($container->get('form.factory'));
+        parent::__construct($formFactory);
     }
 
     protected function process($data, array $options): void
     {
         $this->entityManager->persist($data);
+
         $this->entityManager->flush();
+
         $this->flashBag->add('success', 'Votre produit a été créé avec succès.');
     }
 

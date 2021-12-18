@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
+use App\Entity\User;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,8 +31,8 @@ class LoginTest extends WebTestCase
 
         $form = $crawler->filter('form[name=login]')->form(
             [
-                'email' => $email,
-                'password' => 'password'
+                '_username' => $email,
+                '_password' => 'password'
             ]
         );
 
@@ -44,7 +47,7 @@ class LoginTest extends WebTestCase
         yield ['customer@email.com'];
     }
 
-    public function testInvalidCredentials(): void
+    public function testInvalidPassword(): void
     {
         $client = static::createClient();
 
@@ -58,8 +61,8 @@ class LoginTest extends WebTestCase
 
         $form = $crawler->filter('form[name=login]')->form(
             [
-                'email' => 'producer@email.com',
-                'password' => 'fail'
+                '_username' => 'producer@email.com',
+                '_password' => 'fail'
             ]
         );
 
@@ -86,8 +89,8 @@ class LoginTest extends WebTestCase
 
         $form = $crawler->filter('form[name=login]')->form(
             [
-                'email' => 'fail@email.com',
-                'password' => 'password'
+                '_username' => 'fail@email.com',
+                '_password' => 'password'
             ]
         );
 
@@ -116,8 +119,8 @@ class LoginTest extends WebTestCase
         $form = $crawler->filter("form[name=login]")->form(
             [
                 "_csrf_token" => "fail",
-                "email" => $email,
-                "password" => "password"
+                "_username" => $email,
+                "_password" => "password"
             ]
         );
 
@@ -128,5 +131,46 @@ class LoginTest extends WebTestCase
         $client->followRedirect();
 
         self::assertSelectorTextContains("div.alert-danger", 'Jeton CSRF invalide.');
+    }
+
+    public function testLoginFailedIfEmailIsNotVerified(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $crawler = $client->request(
+            Request::METHOD_GET,
+            $router->generate('security_login')
+        );
+
+        $user = $client
+            ->getContainer()
+            ->get('doctrine.orm.entity_manager')
+            ->getRepository(User::class)
+            ->findOneBy(['isVerified' => false]);
+
+        $form = $crawler->filter('form[name=login]')->form(
+            [
+                '_username' => $user->getEmail(),
+                '_password' => 'password'
+            ]
+        );
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('security_login');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains(
+            'div.alert-danger',
+            "Votre compte n'a pas été confirmé. Veuillez vérifier vos emails afin de confirmer votre compte."
+        );
     }
 }
