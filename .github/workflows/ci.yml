@@ -14,7 +14,7 @@ jobs:
       postgres:
         image: postgres:13-alpine
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ChangeMe
           POSTGRES_DB: app
           POSTGRES_USER: symfony
         ports:
@@ -53,15 +53,11 @@ jobs:
           cp process.env.dist process.env
           GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} yarn build
       - name: Prepare database
-        env:
-          DATABASE_URL: "postgresql://symfony:postgres@postgres:5432/app?serverVersion=13&charset=utf8"
         run: |
           php bin/console doctrine:database:create
           php bin/console doctrine:schema:update --force
           php bin/console doctrine:fixtures:load -n
       - name: Run functional tests
-        env:
-          DATABASE_URL: "postgresql://symfony:postgres@postgres:5432/app?serverVersion=13&charset=utf8"
         run: GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} php vendor/bin/simple-phpunit
       - name: Analyze coding style
         run: php vendor/bin/phpcs
