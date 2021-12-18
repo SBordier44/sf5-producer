@@ -15,7 +15,7 @@ jobs:
         image: postgres:13-alpine
         env:
           POSTGRES_PASSWORD: ChangeMe
-          POSTGRES_DB: app
+          POSTGRES_DB: app_test
           POSTGRES_USER: symfony
         ports:
           - 5432:5432
