@@ -135,6 +135,30 @@ class UserTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
+    public function testSuccessfullEditInfoWithNotChangedEmailAndNotRevalidateAccount(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('account_edit_informations'));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $form = $crawler->filter('form[name=user_info]')->form(
+            [
+                'user_info[email]' => 'customer@email.com',
+                'user_info[firstName]' => 'John',
+                'user_info[lastName]' => 'Doe'
+            ]
+        );
+
+        $client->submit($form);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+    }
+
     /**
      * @dataProvider provideBadRequestsUserInfo
      */

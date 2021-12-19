@@ -47,7 +47,7 @@ class CartController extends AbstractController
         return $this->redirectToRoute(
             'farm_show',
             [
-                'slug' => $product->getFarm()->getSlug()
+                'slug' => $product->getFarm()?->getSlug()
             ]
         );
     }
@@ -74,16 +74,16 @@ class CartController extends AbstractController
     #[IsGranted('ROLE_CUSTOMER')]
     public function increaseQuantity(CartItem $cartItem): RedirectResponse
     {
-        if ($cartItem->getQuantity() >= $cartItem->getProduct()->getQuantity()) {
+        if ($cartItem->getQuantity() >= $cartItem->getProduct()?->getQuantity()) {
             $this->addFlash(
                 'warning',
-                "Il ne reste que {$cartItem->getProduct()->getQuantity()} 
-                articles pour ce produit. Je ne pouvez pas en ajouter d'avantage"
+                sprintf(
+                    "Il ne reste que {$cartItem->getProduct()?->getQuantity()} 
+                %s pour ce produit. 
+                Je ne pouvez pas en ajouter d'avantage",
+                    ($cartItem->getQuantity() > 1 ? 'articles' : 'article')
+                )
             );
-        } elseif ($cartItem->getQuantity() < 100) {
-            $cartItem->increaseQuantity();
-
-            $this->em->flush();
         }
 
         return $this->redirectToRoute('cart_index');
@@ -97,6 +97,14 @@ class CartController extends AbstractController
             $cartItem->decreaseQuantity();
 
             $this->em->flush();
+        }
+
+        if ($cartItem->getQuantity() <= 0) {
+            $this->em->remove($cartItem);
+
+            $this->em->flush();
+
+            $this->addFlash('success', 'Produit retiré de votre panier avec succès.');
         }
 
         return $this->redirectToRoute('cart_index');

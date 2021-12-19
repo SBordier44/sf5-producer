@@ -82,12 +82,12 @@
                                                     </span>
                                                     <div class="quantity">
                                                         <a href="{{ path('cart_item_decrease', {id: item.vars.data.id}) }}"
-                                                           class="dec-btn p-0">
+                                                           class="dec-btn p-0" id="item_decrease_quantity">
                                                             <i class="fas fa-caret-left"></i>
                                                         </a>
                                                         {{ form_widget(item.quantity) }}
                                                         <a href="{{ path('cart_item_increase', {id: item.vars.data.id}) }}"
-                                                           class="inc-btn p-0">
+                                                           class="inc-btn p-0" id="item_increase_quantity">
                                                             <i class="fas fa-caret-right"></i>
                                                         </a>
                                                     </div>

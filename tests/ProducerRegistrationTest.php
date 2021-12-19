@@ -97,7 +97,7 @@ class ProducerRegistrationTest extends WebTestCase
 
         $client->submit($form);
 
-        if ($siret === '00000000000000') {
+        if ($siret === '00000000000000' || $siret === '51171732400012' || $siret === '51236909100024') {
             self::assertResponseStatusCodeSame(Response::HTTP_OK);
 
             foreach ($errorMessages as $errorMessage) {
@@ -271,10 +271,36 @@ class ProducerRegistrationTest extends WebTestCase
                 'registration_form[firstName]' => 'John',
                 'registration_form[lastName]' => 'Doe',
                 'registration_form[farm][address][phone]' => '0102030405',
-                'registration_form[farm][description]' => ''
+                'registration_form[farm][description]' => 'petite description'
             ],
             ['Le numéro Siret "00000000000000" est invalide'],
             '00000000000000'
+        ];
+        yield [
+            [
+                'registration_form[email]' => 'john.doe@email.com',
+                'registration_form[plainPassword][first]' => 'superPASS@123',
+                'registration_form[plainPassword][second]' => 'superPASS@123',
+                'registration_form[firstName]' => 'John',
+                'registration_form[lastName]' => 'Doe',
+                'registration_form[farm][address][phone]' => '0102030405',
+                'registration_form[farm][description]' => 'petit description'
+            ],
+            ['Ce numéro de siret est déjà enregistré chez nous.'],
+            '51171732400012'
+        ];
+        yield [
+            [
+                'registration_form[email]' => 'john.doe@email.com',
+                'registration_form[plainPassword][first]' => 'superPASS@123',
+                'registration_form[plainPassword][second]' => 'superPASS@123',
+                'registration_form[firstName]' => 'John',
+                'registration_form[lastName]' => 'Doe',
+                'registration_form[farm][address][phone]' => '0102030405',
+                'registration_form[farm][description]' => 'petit description'
+            ],
+            ['L\'établissement lié au Siret "51236909100024" est déclaré comme fermé'],
+            '51236909100024'
         ];
     }
 }

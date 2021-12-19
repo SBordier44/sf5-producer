@@ -54,7 +54,7 @@ class CartTest extends WebTestCase
 
         $crawler = $client->followRedirect();
 
-        self::assertEquals(0, $crawler->filter('tbody > tr')->count());
+        self::assertEquals(0, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
     }
 
     public function testFailedAddToCartIfUserIsNotLogged(): void
@@ -170,7 +170,7 @@ class CartTest extends WebTestCase
 
         $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
 
-        self::assertEquals(0, $crawler->filter('tbody > tr')->count());
+        self::assertEquals(0, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
 
         self::assertEquals(1, $crawler->filter('div > .alert-warning')->count());
     }
@@ -206,7 +206,7 @@ class CartTest extends WebTestCase
 
         $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
 
-        self::assertEquals(1, $crawler->filter('tbody > tr')->count());
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
 
         $form = $crawler->filter('form[name=cart]')->form(
             [
@@ -220,7 +220,7 @@ class CartTest extends WebTestCase
 
         $crawler = $client->followRedirect();
 
-        self::assertEquals(1, $crawler->filter('tbody > tr')->count());
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
 
         self::assertEquals(1, $crawler->filter('div > .alert-danger')->count());
 
@@ -229,5 +229,204 @@ class CartTest extends WebTestCase
             ->attr('value');
 
         self::assertEquals(1, $cart);
+    }
+
+    public function testIncraseProductQuantity(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        /** @var Product $product */
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $product->setQuantity(1);
+
+        $entityManager->flush();
+
+        $entityManager->refresh($product);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
+
+        $link = $crawler->filter('#item_increase_quantity')->link();
+
+        $client->click($link);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('cart_index');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains(
+            '.alert-warning',
+            'Il ne reste que 1 article pour ce produit. Je ne pouvez pas en ajouter d\'avantage'
+        );
+    }
+
+    public function testDecreaseProductQuantity(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        /** @var Product $product */
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $product->setQuantity(1);
+
+        $entityManager->flush();
+
+        $entityManager->refresh($product);
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
+
+        $link = $crawler->filter('#item_decrease_quantity')->link();
+
+        $client->click($link);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('cart_index');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testDecreaseProductQuantityAndRemoveProductIfQuantityEqualZero(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        /** @var Product $product */
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
+
+        $link = $crawler->filter('#item_decrease_quantity')->link();
+
+        $client->click($link);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('cart_index');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains('.alert-info', 'Votre panier est vide');
+
+        self::assertSelectorTextContains('.alert-success', 'Produit retiré de votre panier avec succès.');
+
+        self::assertEquals(
+            0,
+            $client->getCrawler()->filter('form[name=cart] > div > div > div > table > tbody > tr')->count()
+        );
+    }
+
+    public function testRemoveProduct(): void
+    {
+        $client = static::createAuthenticatedClient('customer@email.com');
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get('router');
+
+        $entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        /** @var Product $product */
+        $product = $entityManager->getRepository(Product::class)->getOne();
+
+        $client->request(
+            Request::METHOD_GET,
+            $router->generate(
+                'cart_add',
+                [
+                    'id' => $product->getId()
+                ]
+            )
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate('cart_index'));
+
+        self::assertEquals(1, $crawler->filter('form[name=cart] > div > div > div > table > tbody > tr')->count());
+
+        $link = $crawler->filter('a.reset-anchor')->link();
+
+        $client->click($link);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        self::assertRouteSame('cart_index');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        self::assertSelectorTextContains('.alert-info', 'Votre panier est vide');
+
+        self::assertSelectorTextContains('.alert-success', 'Produit retiré de votre panier avec succès.');
+
+        self::assertEquals(
+            0,
+            $client->getCrawler()->filter('form[name=cart] > div > div > div > table > tbody > tr')->count()
+        );
     }
 }
